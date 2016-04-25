@@ -22,7 +22,7 @@ setup(
     description='Download public member data from Open Humans',
     long_description_markdown_filename='README.md',
 
-    version='1.0.0',
+    version='1.0.1',
 
     license='MIT',
 

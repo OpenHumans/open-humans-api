@@ -38,9 +38,7 @@ def download_url(result, directory, max_bytes):
     """
     Download a file.
     """
-    url = '{}{}'.format(BASE_URL, result['download_url'])
-
-    response = requests.get(url, stream=True)
+    response = requests.get(result['download_url'], stream=True)
 
     # TODO: make this more robust by parsing the URL
     filename = response.url.split('/')[-1]
@@ -58,6 +56,23 @@ def download_url(result, directory, max_bytes):
     print 'Downloading {} ({})'.format(filename, format_size(size))
 
     output_path = os.path.join(directory, filename)
+
+    try:
+        stat = os.stat(output_path)
+
+        if stat.st_size == size:
+            print 'Skipping "{}"; file exists and is the right size'.format(
+                filename)
+
+            return
+        else:
+            print 'Removing "{}"; file exists and is the wrong size'.format(
+                filename)
+
+            os.remove(output_path)
+    except OSError:
+        # TODO: check errno here?
+        pass
 
     with open(output_path, 'wb') as f:
         for chunk in response.iter_content(chunk_size=8192):
@@ -116,4 +131,6 @@ def download(source, username, directory, max_size):
                                    max_bytes=max_bytes)
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
-        executor.map(download_url_partial, results)
+        for value in executor.map(download_url_partial, results):
+            if value:
+                print value

@@ -5,7 +5,10 @@ import re
 import signal
 
 from functools import partial
-from urllib import urlencode
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 import click
 import concurrent.futures
@@ -48,12 +51,12 @@ def download_url(result, directory, max_bytes):
     size = int(response.headers['Content-Length'])
 
     if size > max_bytes:
-        print 'Skipping {}, {} > {}'.format(filename, format_size(size),
-                                            format_size(max_bytes))
+        print('Skipping {}, {} > {}'.format(filename, format_size(size),
+                                            format_size(max_bytes)))
 
         return
 
-    print 'Downloading {} ({})'.format(filename, format_size(size))
+    print('Downloading {} ({})'.format(filename, format_size(size)))
 
     output_path = os.path.join(directory, filename)
 
@@ -61,13 +64,13 @@ def download_url(result, directory, max_bytes):
         stat = os.stat(output_path)
 
         if stat.st_size == size:
-            print 'Skipping "{}"; file exists and is the right size'.format(
-                filename)
+            print('Skipping "{}"; file exists and is the right size'.format(
+                filename))
 
             return
         else:
-            print 'Removing "{}"; file exists and is the wrong size'.format(
-                filename)
+            print('Removing "{}"; file exists and is the wrong size'.format(
+                filename))
 
             os.remove(output_path)
     except OSError:
@@ -79,7 +82,7 @@ def download_url(result, directory, max_bytes):
             if chunk:
                 f.write(chunk)
 
-    print 'Downloaded {}'.format(filename)
+    print('Downloaded {}'.format(filename))
 
 
 @click.command()
@@ -110,10 +113,10 @@ def download(source, username, directory, max_size):
     results = []
     counter = 1
 
-    print 'Retrieving metadata'
+    print('Retrieving metadata')
 
     while True:
-        print 'Retrieving page {}'.format(counter)
+        print('Retrieving page {}'.format(counter))
 
         response = get_page(page)
         results = results + response['results']
@@ -125,7 +128,7 @@ def download(source, username, directory, max_size):
 
         counter += 1
 
-    print 'Downloading {} files'.format(len(results))
+    print('Downloading {} files'.format(len(results)))
 
     download_url_partial = partial(download_url, directory=directory,
                                    max_bytes=max_bytes)
@@ -133,4 +136,4 @@ def download(source, username, directory, max_size):
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
         for value in executor.map(download_url_partial, results):
             if value:
-                print value
+                print(value)

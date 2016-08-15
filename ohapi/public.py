@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import logging
 import os
 import re
 import signal
@@ -16,25 +17,11 @@ import requests
 
 from humanfriendly import format_size, parse_size
 
+from .utils import get_page, signal_handler_cb
+
+
 BASE_URL = 'https://www.openhumans.org'
 BASE_URL_API = '{}/api/public-data/'.format(BASE_URL)
-
-
-def signal_handler_cb(signal_name, frame):
-    """
-    Exit on Ctrl-C.
-    """
-    os._exit(1)
-
-
-def get_page(url):
-    """
-    Get a single page of results.
-    """
-    response = requests.get(url)
-    data = response.json()
-
-    return data
 
 
 def download_url(result, directory, max_bytes):
@@ -51,12 +38,12 @@ def download_url(result, directory, max_bytes):
     size = int(response.headers['Content-Length'])
 
     if size > max_bytes:
-        print('Skipping {}, {} > {}'.format(filename, format_size(size),
+        logging.info('Skipping {}, {} > {}'.format(filename, format_size(size),
                                             format_size(max_bytes)))
 
         return
 
-    print('Downloading {} ({})'.format(filename, format_size(size)))
+    logging.info('Downloading {} ({})'.format(filename, format_size(size)))
 
     output_path = os.path.join(directory, filename)
 
@@ -64,12 +51,12 @@ def download_url(result, directory, max_bytes):
         stat = os.stat(output_path)
 
         if stat.st_size == size:
-            print('Skipping "{}"; file exists and is the right size'.format(
+            logging.info('Skipping "{}"; exists and is the right size'.format(
                 filename))
 
             return
         else:
-            print('Removing "{}"; file exists and is the wrong size'.format(
+            logging.info('Removing "{}"; exists and is the wrong size'.format(
                 filename))
 
             os.remove(output_path)
@@ -82,7 +69,7 @@ def download_url(result, directory, max_bytes):
             if chunk:
                 f.write(chunk)
 
-    print('Downloaded {}'.format(filename))
+    logging.info('Downloaded {}'.format(filename))
 
 
 @click.command()
@@ -94,7 +81,7 @@ def download_url(result, directory, max_bytes):
               default='128m')
 def download(source, username, directory, max_size):
     """
-    Download data from Open Humans.
+    Download public data from Open Humans.
     """
     signal.signal(signal.SIGINT, signal_handler_cb)
 
@@ -113,10 +100,10 @@ def download(source, username, directory, max_size):
     results = []
     counter = 1
 
-    print('Retrieving metadata')
+    logging.info('Retrieving metadata')
 
     while True:
-        print('Retrieving page {}'.format(counter))
+        logging.info('Retrieving page {}'.format(counter))
 
         response = get_page(page)
         results = results + response['results']
@@ -128,7 +115,7 @@ def download(source, username, directory, max_size):
 
         counter += 1
 
-    print('Downloading {} files'.format(len(results)))
+    logging.info('Downloading {} files'.format(len(results)))
 
     download_url_partial = partial(download_url, directory=directory,
                                    max_bytes=max_bytes)
@@ -136,4 +123,4 @@ def download(source, username, directory, max_size):
     with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
         for value in executor.map(download_url_partial, results):
             if value:
-                print(value)
+                logging.info(value)

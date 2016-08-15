@@ -13,16 +13,16 @@ if not sys.platform.startswith('win'):
     ])
 
 setup(
-    name='open-humans-downloader',
-    author='Beau Gunderson',
-    author_email='beau@personalgenomes.org',
+    name='open-humans-api',
+    author='Beau Gunderson, Madeleine Ball',
+    author_email='support@openhumans.org',
 
-    url='https://github.com/PersonalGenomesOrg/open-humans-downloader',
+    url='https://github.com/PersonalGenomesOrg/open-humans-api',
 
-    description='Download public member data from Open Humans',
+    description='Tools for working with Open Humans APIs',
     long_description_markdown_filename='README.md',
 
-    version='1.0.1',
+    version='0.1',
 
     license='MIT',
 
@@ -43,11 +43,13 @@ setup(
         'Topic :: Utilities',
     ],
 
-    py_modules=['oh_download'],
+    packages=['ohapi'],
 
     entry_points={
         'console_scripts': [
-            'oh-download = oh_download:download',
+            'ohpub-download = ohapi.public:download',
+            'ohproj-download-all = ohapi.command_line:download_all',
+            'ohproj-download-member = ohapi.command_line:download_member',
         ]
     },
 
@@ -55,7 +57,7 @@ setup(
         'click>=6.3',
         'humanfriendly>=1.44.3',
         'requests>=2.9.1',
-        'tomorrow>=0.2.4',
+        'arrow>=0.8.0',
     ],
 
     setup_requires=setup_requires,

@@ -29,39 +29,100 @@ $ oh-download --source twenty_three_and_me --directory 23andme
 $ oh-download --username beau
 ```
 
-### ohproj-download-all
+### ohproj-download
 
 ```
-Usage: ohproj-download-all [OPTIONS]
+Usage: ohproj-download [OPTIONS]
 
-  Download files for all project members to the target directory.
+  Download data from project members to the target directory.
 
-Options:
-  -d, --directory TEXT     Target directory for downloaded files.  [required]
-  -T, --master-token TEXT  Project master access token.  [required]
-  -m, --max-size TEXT      Maximum file size to download.  [default: 128m]
-  -v, --verbose            Report INFO level logging to stdout
-  -debug                   Report DEBUG level logging to stdout.
-  --help                   Show this message and exit.
-ohproj-download-all --help  0.20s user 0.02s system 98% cpu 0.215 total
-```
+  Unless this is a member-specific download, directories will be created for
+  each project member ID. Also, unless a source is specified, all shared
+  sources are downloaded and data is sorted into subdirectories according to
+  source.
 
-### ohproj-download-member
-```
-Usage: ohproj-download-member [OPTIONS]
-
-  Download files for a specific member to the target directory.
-
-  This command either accepts an OAuth2 user token (-t), or a master access
-  token (-T) and project member ID (-m).
+  Projects can optionally return data to Open Humans member accounts. If
+  project_data is True (or the "--project-data" flag is used), this data
+  (the project's own data files, instead of data from other sources) will be
+  downloaded for each member.
 
 Options:
   -d, --directory TEXT     Target directory for downloaded files.  [required]
   -T, --master-token TEXT  Project master access token.
   -m, --member TEXT        Project member ID.
   -t, --access-token TEXT  OAuth2 user access token.
-  -m, --max-size TEXT      Maximum file size to download.  [default: 128m]
+  -s, --source TEXT        Only download files from this source.
+  --project-data TEXT      Download this project's own data.
+  --max-size TEXT          Maximum file size to download.  [default: 128m]
   -v, --verbose            Report INFO level logging to stdout
-  -debug                   Report DEBUG level logging to stdout.
+  --debug                  Report DEBUG level logging to stdout.
+  --help                   Show this message and exit.
+```
+
+## ohproj-metadata
+
+```
+Usage: ohproj-metadata [OPTIONS]
+
+  Draft or review metadata files for uploading files to Open Humans.
+
+  The target directory should either represent files for a single member (no
+  subdirectories), or contain a subdirectory for each project member ID.
+
+Options:
+  -d, --directory TEXT  Target directory  [required]
+  --create-csv TEXT     Create draft CSV metadata  [required]
+  --max-size TEXT       Maximum file size to consider.  [default: 128m]
+  -v, --verbose         Show INFO level logging
+  --debug               Show DEBUG level logging.
+  --help                Show this message and exit.
+```
+
+### ohproj-upload
+```
+Usage: ohproj-upload [OPTIONS]
+
+  Upload files for the project to Open Humans member accounts.
+
+  If using a master access token and not specifying member ID:
+
+  (1) Files should be organized in subdirectories according to project
+  member ID, e.g.:
+    main_directory/01234567/data.json
+    main_directory/12345678/data.json
+    main_directory/23456789/data.json
+  (2) The metadata CSV should have the following format:
+    1st column: Project member ID
+    2nd column: filenames
+    3rd & additional columns: Metadata fields (see below)
+
+  If uploading for a specific member:
+   (1) The local directory should not contain subdirectories.
+   (2) The metadata CSV should have the following format:
+     1st column: filenames
+     2nd & additional columns: Metadata fields (see below)
+
+  The default behavior is to overwrite files with matching filenames on Open
+  Humans, but not otherwise delete files. (Use --safe or --sync to change
+  this behavior.)
+
+  If included, the following metadata columns should be correctly formatted:
+    'tags': should be comma-separated strings
+    'md5': should match the file's md5 hexdigest
+    'creation_date', 'start_date', 'end_date': ISO 8601 dates or datetimes
+
+  Other metedata fields (e.g. 'description') can be arbitrary strings.
+
+Options:
+  -d, --directory TEXT     Target directory for downloaded files.  [required]
+  --metadata-csv TEXT      CSV file containing file metadata.  [required]
+  -T, --master-token TEXT  Project master access token.
+  -m, --member TEXT        Project member ID.
+  -t, --access-token TEXT  OAuth2 user access token.
+  --safe                   Do not overwrite files in Open Humans.
+  --sync                   Delete files not present in local directories.
+  --max-size TEXT          Maximum file size to download.  [default: 128m]
+  -v, --verbose            Report INFO level logging to stdout
+  --debug                  Report DEBUG level logging to stdout.
   --help                   Show this message and exit.
 ```

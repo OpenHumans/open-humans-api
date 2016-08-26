@@ -4,7 +4,8 @@ import os
 import arrow
 from humanfriendly import parse_size
 
-from .utils import get_all_results, download_file
+from .utils import (delete_file, download_file, get_all_results, upload_file,
+                    validate_metadata)
 
 MAX_SIZE_DEFAULT = '128m'
 
@@ -26,7 +27,7 @@ class OHProject:
                              result in results}
 
     @staticmethod
-    def download_member_to_dir(member_data, target_member_dir,
+    def download_member_shared(member_data, target_member_dir, source=None,
                                max_size=MAX_SIZE_DEFAULT):
         """
         Download files to sync a local directory to match OH member data.
@@ -35,7 +36,8 @@ class OHProject:
         If there are multiple files with the same name, the most recent is
         downloaded.
         """
-        logging.info('in download_member_to_dir')
+        logging.debug('Reviewing member data...')
+        sources_shared = member_data['sources_shared']
         file_data = {}
         for datafile in member_data['data']:
             basename = datafile['basename']
@@ -43,32 +45,81 @@ class OHProject:
                     arrow.get(datafile['created']) >
                     arrow.get(file_data[basename]['created'])):
                 file_data[basename] = datafile
+
+        logging.info('Downloading member data to {}'.format(target_member_dir))
         for basename in file_data:
-            source = file_data[basename]['source']
-            source_data_dir = os.path.join(target_member_dir, source)
-            if not os.path.exists(source_data_dir):
-                os.mkdir(source_data_dir)
-            target_filepath = os.path.join(source_data_dir, basename)
+
+            # If not in sources shared, it's the project's own data. Skip.
+            if file_data[basename]['source'] not in sources_shared:
+                continue
+
+            # Filter source if specified. Determine target directory for file.
+            if source:
+                if source == file_data[basename]['source']:
+                    target_filepath = os.path.join(target_member_dir, basename)
+                else:
+                    continue
+            else:
+                source_data_dir = os.path.join(target_member_dir,
+                                               file_data[basename]['source'])
+                if not os.path.exists(source_data_dir):
+                    os.mkdir(source_data_dir)
+                target_filepath = os.path.join(source_data_dir, basename)
+
             download_file(download_url=file_data[basename]['download_url'],
                           target_filepath=target_filepath,
                           max_bytes=parse_size(max_size))
 
-    def download_to_dir(self, target_dir, project_member=None,
-                        all_members=False, max_size=MAX_SIZE_DEFAULT):
-        if not (project_member or all_members):
-            raise Exception('Specify member ID, or set all_members to True.')
-        if all_members:
-            members = self.project_data.keys()
-            for member in members:
-                member_dir = os.path.join(target_dir, member)
-                if not os.path.exists(member_dir):
-                    os.mkdir(member_dir)
-                self.download_member_to_dir(
-                    member_data=self.project_data[member],
-                    target_member_dir=member_dir,
-                    max_size=max_size)
-        else:
-            self.download_member_to_dir(
-                member_data=self.project_data[project_member],
-                target_member_dir=target_dir,
+    def download_all_shared(self, target_dir, source=None,
+                            max_size=MAX_SIZE_DEFAULT):
+        members = self.project_data.keys()
+        for member in members:
+            member_dir = os.path.join(target_dir, member)
+            if not os.path.exists(member_dir):
+                os.mkdir(member_dir)
+            self.download_member_shared(
+                member_data=self.project_data[member],
+                target_member_dir=member_dir,
+                source=source,
                 max_size=max_size)
+
+    @staticmethod
+    def upload_member_from_dir(member_data, target_member_dir, metadata,
+                               access_token, mode='default',
+                               max_size=MAX_SIZE_DEFAULT):
+        """
+        Upload files in target directory to an Open Humans member's account.
+
+        The default behavior is to overwrite files with matching filenames on
+        Open Humans, but not otherwise delete files.
+
+        If the 'mode' parameter is 'safe': matching filenames will not be
+        overwritten.
+
+        If the 'mode' parameter is 'sync': files on Open Humans that are not
+        in the local directory will be deleted.
+        """
+        if not validate_metadata(target_member_dir, metadata):
+            raise ValueError('Metadata should match directory contents!')
+        project_data = {f['basename']: f for f in member_data['data'] if
+                        f['source'] not in member_data['sources_shared']}
+        for filename in metadata:
+            if filename in project_data and mode == 'safe':
+                logging.info('Skipping {}, remote exists with matching'
+                             ' name'.format(filename))
+                continue
+            filepath = os.path.join(target_member_dir, filename)
+            remote_file_info = (project_data[filename] if filename in
+                                project_data else None)
+            upload_file(target_filepath=filepath,
+                        metadata=metadata[filename],
+                        access_token=access_token,
+                        project_member_id=member_data['project_member_id'],
+                        remote_file_info=remote_file_info)
+        if mode == 'sync':
+            for filename in project_data:
+                if filename not in metadata:
+                    delete_file(
+                        file_basename=filename,
+                        access_token=access_token,
+                        project_member_id=member_data['project_member_id'])

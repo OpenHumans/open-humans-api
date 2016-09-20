@@ -79,10 +79,24 @@ def download_url(result, directory, max_bytes):
               default='.')
 @click.option('-m', '--max-size', help='the maximum file size to download',
               default='128m')
-def download(source, username, directory, max_size):
+@click.option('-v', '--verbose', help='Report INFO level logging to stdout',
+              is_flag=True)
+@click.option('--debug', help='Report DEBUG level logging to stdout.',
+              is_flag=True)
+def download(source, username, directory, max_size, verbose, debug):
     """
     Download public data from Open Humans.
     """
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif verbose:
+        logging.basicConfig(level=logging.INFO)
+
+    logging.debug("Running with source: '{}'".format(source) +
+                  " and username: '{}'".format(username) +
+                  " and directory: '{}'".format(directory) +
+                  " and max-size: '{}'".format(max_size))
+
     signal.signal(signal.SIGINT, signal_handler_cb)
 
     max_bytes = parse_size(max_size)

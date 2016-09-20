@@ -1,11 +1,22 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+import sys
 
 
 def readme():
     with open('README.rst') as f:
         return f.read()
+
+# Add backport of futures unless Python version is 3.2 or later.
+install_requires = [
+    'click>=6.3',
+    'humanfriendly>=1.44.3',
+    'requests>=2.9.1',
+    'arrow>=0.8.0',
+    ]
+if sys.version_info < (3, 2):
+    install_requires.append('futures>=3.0.5')
 
 setup(
     name='open-humans-api',
@@ -49,10 +60,5 @@ setup(
         ]
     },
 
-    install_requires=[
-        'click>=6.3',
-        'humanfriendly>=1.44.3',
-        'requests>=2.9.1',
-        'arrow>=0.8.0',
-    ],
+    install_requires=install_requires,
 )

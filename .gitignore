@@ -24,6 +24,10 @@ var/
 .installed.cfg
 *.egg
 
+# Project-specific config for different PyPI username for twine.
+# e.g. `twine upload --config-file ./.pypirc dist/*`
+.pypirc
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.

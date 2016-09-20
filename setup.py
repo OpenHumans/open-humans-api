@@ -1,28 +1,23 @@
 #!/usr/bin/env python
 
-import sys
-
 from setuptools import setup
 
-setup_requires = []
 
-# I only release from OS X so markdown/pypandoc isn't needed in Windows
-if not sys.platform.startswith('win'):
-    setup_requires.extend([
-        'setuptools-markdown',
-    ])
+def readme():
+    with open('README.rst') as f:
+        return f.read()
 
 setup(
     name='open-humans-api',
-    author='Beau Gunderson, Madeleine Ball',
+    author='Madeleine Ball',
     author_email='support@openhumans.org',
 
     url='https://github.com/PersonalGenomesOrg/open-humans-api',
 
     description='Tools for working with Open Humans APIs',
-    long_description_markdown_filename='README.md',
+    long_description=readme(),
 
-    version='0.1',
+    version='0.1.0',
 
     license='MIT',
 
@@ -30,7 +25,7 @@ setup(
 
     classifiers=[
         'Environment :: Console',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Information Technology',
@@ -60,6 +55,4 @@ setup(
         'requests>=2.9.1',
         'arrow>=0.8.0',
     ],
-
-    setup_requires=setup_requires,
 )

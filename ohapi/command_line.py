@@ -136,16 +136,23 @@ def upload(directory, metadata_csv, master_token=None, member=None,
     Upload files for the project to Open Humans member accounts.
 
     If using a master access token and not specifying member ID:
-        (1) Files should be organized in subdirectories according to project
-        member ID, e.g.:
-            main_directory/01234567/data.json
-            main_directory/12345678/data.json
-            main_directory/23456789/data.json
-        (2) The metadata CSV should have the following format:
-            1st column: Project member ID
-            2nd column: filenames
-            3rd & additional columns: Metadata fields (see below)
 
+    (1) Files should be organized in subdirectories according to project
+    member ID, e.g.:
+
+    \b
+        main_directory/01234567/data.json
+        main_directory/12345678/data.json
+        main_directory/23456789/data.json
+
+    (2) The metadata CSV should have the following format:
+
+    \b
+        1st column: Project member ID
+        2nd column: filenames
+        3rd & additional columns: Metadata fields (see below)
+
+    \b
     If uploading for a specific member:
         (1) The local directory should not contain subdirectories.
         (2) The metadata CSV should have the following format:
@@ -156,6 +163,7 @@ def upload(directory, metadata_csv, master_token=None, member=None,
     Open Humans, but not otherwise delete files. (Use --safe or --sync to
     change this behavior.)
 
+    \b
     If included, the following metadata columns should be correctly formatted:
         'tags': should be comma-separated strings
         'md5': should match the file's md5 hexdigest

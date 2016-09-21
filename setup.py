@@ -23,7 +23,7 @@ setup(
     author='Madeleine Ball',
     author_email='support@openhumans.org',
 
-    url='https://github.com/PersonalGenomesOrg/open-humans-api',
+    url='https://github.com/OpenHumans/open-humans-api',
 
     description='Tools for working with Open Humans APIs',
     long_description=readme(),

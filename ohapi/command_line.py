@@ -19,7 +19,8 @@ MAX_FILE_DEFAULT = parse_size('128m')
 @click.option('-m', '--member', help='Project member ID.')
 @click.option('-t', '--access-token', help='OAuth2 user access token.')
 @click.option('-s', '--source', help='Only download files from this source.')
-@click.option('--project-data', help="Download this project's own data.")
+@click.option('--project-data', help="Download this project's own data.",
+              is_flag=True)
 @click.option('--max-size', help='Maximum file size to download.',
               default='128m', show_default=True)
 @click.option('-v', '--verbose', help='Report INFO level logging to stdout',
@@ -54,35 +55,36 @@ def download(directory, master_token=None, member=None, access_token=None,
     elif verbose:
         logging.basicConfig(level=logging.INFO)
 
-    if project_data:
-        download_project_data(
-            directory=directory, master_token=master_token, member=member,
-            access_token=access_token, max_size=max_size)
-    else:
-        if master_token:
-            project = OHProject(master_access_token=master_token)
-            if member:
+    if master_token:
+        project = OHProject(master_access_token=master_token)
+        if member:
+            if project_data:
+                project.download_member_project_data(
+                    member_data=project.project_data[member],
+                    target_member_dir=directory,
+                    max_size=max_size)
+            else:
                 project.download_member_shared(
                     member_data=project.project_data[member],
                     target_member_dir=directory,
                     source=source,
                     max_size=max_size)
-            else:
-                project.download_all_shared(target_dir=directory,
-                                            source=source,
-                                            max_size=max_size)
         else:
-            member_data = exchange_oauth2_member(access_token)
+            project.download_all(target_dir=directory,
+                                 source=source,
+                                 max_size=max_size,
+                                 project_data=project_data)
+    else:
+        member_data = exchange_oauth2_member(access_token)
+        if project_data:
+            OHProject.download_member_project_data(member_data=member_data,
+                                                   target_member_dir=directory,
+                                                   max_size=max_size)
+        else:
             OHProject.download_member_shared(member_data=member_data,
                                              target_member_dir=directory,
                                              source=source,
                                              max_size=max_size)
-
-
-def download_project_data(directory, master_token, member, access_token,
-                          max_size='128m'):
-    """Placeholder function."""
-    pass
 
 
 @click.command()

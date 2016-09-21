@@ -19,25 +19,8 @@ class OHProject:
         self.project_data = None
         self.update_data()
 
-    def update_data(self):
-        url = ('https://www.openhumans.org/api/direct-sharing/project/'
-               'members/?access_token={}'.format(self.master_access_token))
-        results = get_all_results(url)
-        self.project_data = {result['project_member_id']: result for
-                             result in results}
-
     @staticmethod
-    def download_member_shared(member_data, target_member_dir, source=None,
-                               max_size=MAX_SIZE_DEFAULT):
-        """
-        Download files to sync a local directory to match OH member data.
-
-        Files are downloaded to match their "basename" on Open Humans.
-        If there are multiple files with the same name, the most recent is
-        downloaded.
-        """
-        logging.debug('Reviewing member data...')
-        sources_shared = member_data['sources_shared']
+    def _get_member_file_data(member_data):
         file_data = {}
         for datafile in member_data['data']:
             basename = datafile['basename']
@@ -45,6 +28,48 @@ class OHProject:
                     arrow.get(datafile['created']) >
                     arrow.get(file_data[basename]['created'])):
                 file_data[basename] = datafile
+        return file_data
+
+    def update_data(self):
+        url = ('https://www.openhumans.org/api/direct-sharing/project/'
+               'members/?access_token={}'.format(self.master_access_token))
+        results = get_all_results(url)
+        self.project_data = {result['project_member_id']: result for
+                             result in results}
+
+    @classmethod
+    def download_member_project_data(cls, member_data, target_member_dir,
+                                     max_size=MAX_SIZE_DEFAULT):
+        """
+        Download files to sync a local dir to match OH member project data.
+        """
+        logging.debug('Download member project data...')
+        sources_shared = member_data['sources_shared']
+        file_data = cls._get_member_file_data(member_data)
+        for basename in file_data:
+            # This is using a trick to identify a project's own data in an API
+            # response, without knowing the project's identifier: if the data
+            # isn't a shared data source, it must be the project's own data.
+            if file_data[basename]['source'] in sources_shared:
+                continue
+            target_filepath = os.path.join(target_member_dir, basename)
+            download_file(download_url=file_data[basename]['download_url'],
+                          target_filepath=target_filepath,
+                          max_bytes=parse_size(max_size))
+
+    @classmethod
+    def download_member_shared(cls, member_data, target_member_dir, source=None,
+                               max_size=MAX_SIZE_DEFAULT):
+        """
+        Download files to sync a local dir to match OH member shared data.
+
+        Files are downloaded to match their "basename" on Open Humans.
+        If there are multiple files with the same name, the most recent is
+        downloaded.
+        """
+        logging.debug('Download member shared data...')
+        sources_shared = member_data['sources_shared']
+        file_data = cls._get_member_file_data(member_data)
 
         logging.info('Downloading member data to {}'.format(target_member_dir))
         for basename in file_data:
@@ -70,18 +95,24 @@ class OHProject:
                           target_filepath=target_filepath,
                           max_bytes=parse_size(max_size))
 
-    def download_all_shared(self, target_dir, source=None,
-                            max_size=MAX_SIZE_DEFAULT):
+    def download_all(self, target_dir, source=None, project_data=False,
+                     max_size=MAX_SIZE_DEFAULT):
         members = self.project_data.keys()
         for member in members:
             member_dir = os.path.join(target_dir, member)
             if not os.path.exists(member_dir):
                 os.mkdir(member_dir)
-            self.download_member_shared(
-                member_data=self.project_data[member],
-                target_member_dir=member_dir,
-                source=source,
-                max_size=max_size)
+            if project_data:
+                self.download_member_project_data(
+                    member_data=self.project_data[member],
+                    target_member_dir=member_dir,
+                    max_size=max_size)
+            else:
+                self.download_member_shared(
+                    member_data=self.project_data[member],
+                    target_member_dir=member_dir,
+                    source=source,
+                    max_size=max_size)
 
     @staticmethod
     def upload_member_from_dir(member_data, target_member_dir, metadata,

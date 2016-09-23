@@ -92,6 +92,8 @@ def load_metadata_csv(input_filepath):
             for row in csv_in:
                 if row[0] not in metadata:
                     metadata[row[0]] = {}
+                if row[1] == 'None' and all([x == 'NA' for x in row[2:]]):
+                    continue
                 metadata[row[0]][row[1]] = {
                     header[i]: row[i] for i in range(2, len(header)) if
                     i != tags_idx
@@ -102,6 +104,8 @@ def load_metadata_csv(input_filepath):
         elif header[0] == 'filename':
             metadata = {}
             for row in csv_in:
+                if row[0] == 'None' and [x == 'NA' for x in row[1:]]:
+                    break
                 metadata[row[0]] = {
                     header[i]: row[i] for i in range(1, len(header)) if
                     i != tags_idx
@@ -128,6 +132,10 @@ def mk_metadata_csv(filedir, outputfilepath, max_bytes=MAX_FILE_DEFAULT):
                 file_info = characterize_local_files(
                     filedir=subdir, max_bytes=max_bytes)
                 proj_member_id = os.path.basename(subdir)
+                if not file_info:
+                    csv_out.writerow([proj_member_id, 'None',
+                                      'NA', 'NA', 'NA', 'NA'])
+                    continue
                 for filename in file_info:
                     csv_out.writerow([proj_member_id,
                                       filename,

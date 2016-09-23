@@ -133,7 +133,7 @@ def metadata(directory, create_csv='', create_json='', review='',
               is_flag=True)
 def upload(directory, metadata_csv, master_token=None, member=None,
            access_token=None, safe=False, sync=False, max_size='128m',
-           verbose=False, debug=False):
+           mode='default', verbose=False, debug=False):
     """
     Upload files for the project to Open Humans member accounts.
 
@@ -185,6 +185,11 @@ def upload(directory, metadata_csv, master_token=None, member=None,
     elif verbose:
         logging.basicConfig(level=logging.INFO)
 
+    if sync:
+        mode = 'sync'
+    elif safe:
+        mode = 'safe'
+
     metadata = load_metadata_csv(metadata_csv)
 
     subdirs = [i for i in os.listdir(directory) if
@@ -203,6 +208,7 @@ def upload(directory, metadata_csv, master_token=None, member=None,
                 member_data=project.project_data[member_id],
                 target_member_dir=subdir_path,
                 metadata=metadata[member_id],
+                mode=mode,
                 access_token=project.master_access_token,
             )
     else:
@@ -214,6 +220,7 @@ def upload(directory, metadata_csv, master_token=None, member=None,
                 member_data=project.project_data[member],
                 target_member_dir=directory,
                 metadata=metadata,
+                mode=mode,
                 access_token=project.master_access_token,
             )
         else:
@@ -222,5 +229,6 @@ def upload(directory, metadata_csv, master_token=None, member=None,
                 member_data=member_data,
                 target_member_dir=directory,
                 metadata=metadata,
+                mode=mode,
                 access_token=access_token,
             )

@@ -150,6 +150,7 @@ class OHProject:
         if mode == 'sync':
             for filename in project_data:
                 if filename not in metadata:
+                    logging.debug("Deleting {}".format(filename))
                     delete_file(
                         file_basename=filename,
                         access_token=access_token,

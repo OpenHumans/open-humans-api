@@ -74,10 +74,26 @@ Options:
   --help                   Show this message and exit.
 ```
 
-### ohproj-metadata
+### ohproj-download-metadata
 
 ```
-Usage: ohproj-metadata [OPTIONS]
+Usage: ohproj-download-metadata [OPTIONS]
+
+  Output CSV with metadata for a project's downloadable files in Open
+  Humans.
+
+Options:
+  -T, --master-token TEXT  Project master access token.  [required]
+  -v, --verbose            Show INFO level logging
+  --debug                  Show DEBUG level logging.
+  --output-csv TEXT        Output project metedata CSV  [required]
+  --help                   Show this message and exit.
+```
+
+### ohproj-upload-metadata
+
+```
+Usage: ohproj-upload-metadata [OPTIONS]
 
   Draft or review metadata files for uploading files to Open Humans.
 

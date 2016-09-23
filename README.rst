@@ -80,12 +80,31 @@ ohproj-download
       --debug                  Report DEBUG level logging to stdout.
       --help                   Show this message and exit.
 
-ohproj-metadata
+ohproj-download-metadata
 ~~~~~~~~~~~~~~~
 
 ::
 
-    Usage: ohproj-metadata [OPTIONS]
+    Usage: ohproj-download-metadata [OPTIONS]
+
+      Draft or review metadata files for uploading files to Open Humans.
+
+      The target directory should either represent files for a single member (no
+      subdirectories), or contain a subdirectory for each project member ID.
+
+      -T, --master-token TEXT  Project master access token.  [required]
+      --output-csv TEXT        Output project metedata CSV  [required]
+      --max-size TEXT       Maximum file size to consider.  [default: 128m]
+      -v, --verbose            Show INFO level logging
+      --debug                  Show DEBUG level logging.
+      --help                Show this message and exit.
+
+ohproj-upload-metadata
+~~~~~~~~~~~~~~~
+
+::
+
+    Usage: ohproj-upload-metadata [OPTIONS]
 
       Draft or review metadata files for uploading files to Open Humans.
 

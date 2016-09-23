@@ -163,6 +163,11 @@ def get_page(url):
     Get a single page of results.
     """
     response = requests.get(url)
+    if not response.status_code == 200:
+        err_msg = 'API response status code {}'.format(response.status_code)
+        if 'detail' in response.json():
+            err_msg = err_msg + ": {}".format(response.json()['detail'])
+        raise StandardError(err_msg)
     data = response.json()
     return data
 
@@ -192,10 +197,7 @@ def get_all_results(starting_page):
 def exchange_oauth2_member(access_token):
     url = ('https://www.openhumans.org/api/direct-sharing/project/'
            'exchange-member/?access_token={}'.format(access_token))
-    req = requests.get(url)
-    logging.info('Member data request completed. '
-                 'Status code: {}'.format(req.status_code))
-    member_data = req.json()
+    member_data = get_page(url)
     logging.debug('JSON data: {}'.format(member_data))
     return member_data
 

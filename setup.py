@@ -28,7 +28,7 @@ setup(
     description='Tools for working with Open Humans APIs',
     long_description=readme(),
 
-    version='0.1.2.1',
+    version='0.1.2.2',
 
     license='MIT',
 

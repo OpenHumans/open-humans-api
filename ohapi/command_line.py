@@ -1,3 +1,4 @@
+import csv
 import logging
 import os
 import re
@@ -88,13 +89,46 @@ def download(directory, master_token=None, member=None, access_token=None,
 
 
 @click.command()
+@click.option('-T', '--master-token', help='Project master access token.',
+              required=True)
+@click.option('-v', '--verbose', help='Show INFO level logging', is_flag=True)
+@click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
+@click.option('--output-csv', help="Output project metedata CSV",
+              required=True)
+def download_metadata(master_token, output_csv, verbose=False, debug=False):
+    """
+    Output CSV with metadata for a project's downloadable files in Open Humans.
+    """
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif verbose:
+        logging.basicConfig(level=logging.INFO)
+
+    project = OHProject(master_access_token=master_token)
+
+    with open(output_csv, 'w') as f:
+        csv_writer = csv.writer(f)
+        header = ['project_member_id', 'data_source', 'file_basename',
+                  'file_upload_date']
+        csv_writer.writerow(header)
+        for member_id in project.project_data:
+            if not project.project_data[member_id]['data']:
+                csv_writer.writerow([member_id, 'NA', 'None', 'NA'])
+            else:
+                for data_item in project.project_data[member_id]['data']:
+                    csv_writer.writerow([
+                        member_id, data_item['source'], data_item['basename'],
+                        data_item['created']])
+
+
+@click.command()
 @click.option('-d', '--directory', help='Target directory', required=True)
 @click.option('--create-csv', help='Create draft CSV metadata', required=True)
 @click.option('--max-size', help='Maximum file size to consider.',
               default='128m', show_default=True)
 @click.option('-v', '--verbose', help='Show INFO level logging', is_flag=True)
 @click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
-def metadata(directory, create_csv='', create_json='', review='',
+def upload_metadata(directory, create_csv='', create_json='', review='',
              max_size='128m', verbose=False, debug=False):
     """
     Draft or review metadata files for uploading files to Open Humans.

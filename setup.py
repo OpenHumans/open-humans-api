@@ -28,7 +28,7 @@ setup(
     description='Tools for working with Open Humans APIs',
     long_description=readme(),
 
-    version='0.1.1',
+    version='0.1.2',
 
     license='MIT',
 
@@ -55,8 +55,9 @@ setup(
         'console_scripts': [
             'ohpub-download = ohapi.public:download',
             'ohproj-download = ohapi.command_line:download',
-            'ohproj-metadata = ohapi.command_line:metadata',
+            'ohproj-download-metadata = ohapi.command_line:download_metadata',
             'ohproj-upload = ohapi.command_line:upload',
+            'ohproj-upload-metadata = ohapi.command_line:upload_metadata',
         ]
     },
 

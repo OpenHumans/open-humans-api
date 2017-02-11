@@ -167,7 +167,7 @@ def get_page(url):
         err_msg = 'API response status code {}'.format(response.status_code)
         if 'detail' in response.json():
             err_msg = err_msg + ": {}".format(response.json()['detail'])
-        raise StandardError(err_msg)
+        raise Exception(err_msg)
     data = response.json()
     return data
 

@@ -81,7 +81,7 @@ ohproj-download
       --help                   Show this message and exit.
 
 ohproj-download-metadata
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
@@ -100,7 +100,7 @@ ohproj-download-metadata
       --help                Show this message and exit.
 
 ohproj-upload-metadata
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 

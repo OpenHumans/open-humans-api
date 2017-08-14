@@ -78,6 +78,8 @@ ohproj-download
       --max-size TEXT          Maximum file size to download.  [default: 128m]
       -v, --verbose            Report INFO level logging to stdout
       --debug                  Report DEBUG level logging to stdout.
+      --memberlist TEXT        Text file with whitelist IDs to retrieve
+      --excludelist TEXT       Text file with blacklist IDs to avoid
       --help                   Show this message and exit.
 
 ohproj-download-metadata

@@ -8,7 +8,8 @@ from click import UsageError
 from humanfriendly import parse_size
 
 from .projects import OHProject
-from .utils import exchange_oauth2_member, load_metadata_csv, mk_metadata_csv
+from .utils import (exchange_oauth2_member, load_metadata_csv,
+                    mk_metadata_csv, read_id_list)
 
 MAX_FILE_DEFAULT = parse_size('128m')
 
@@ -28,9 +29,11 @@ MAX_FILE_DEFAULT = parse_size('128m')
               is_flag=True)
 @click.option('--debug', help='Report DEBUG level logging to stdout.',
               is_flag=True)
+@click.option('--memberlist', help='Text file with whitelist IDs to retrieve')
+@click.option('--excludelist', help='Text file with blacklist IDs to avoid')
 def download(directory, master_token=None, member=None, access_token=None,
              source=None, project_data=False, max_size='128m', verbose=False,
-             debug=False):
+             debug=False, memberlist=None, excludelist=None):
     """
     Download data from project members to the target directory.
 
@@ -44,6 +47,11 @@ def download(directory, master_token=None, member=None, access_token=None,
     (the project's own data files, instead of data from other sources) will be
     downloaded for each member.
     """
+    if (memberlist or excludelist) and (member or access_token):
+        raise UsageError('Please do not provide a memberlist or excludelist '
+                         'when retrieving data for a single member.')
+    memberlist = read_id_list(memberlist)
+    excludelist = read_id_list(excludelist)
     if not (master_token or access_token) or (master_token and access_token):
         raise UsageError('Please specify either a master access token (-T), '
                          'or an OAuth2 user access token (-t).')
@@ -74,6 +82,8 @@ def download(directory, master_token=None, member=None, access_token=None,
             project.download_all(target_dir=directory,
                                  source=source,
                                  max_size=max_size,
+                                 memberlist=memberlist,
+                                 excludelist=excludelist,
                                  project_data=project_data)
     else:
         member_data = exchange_oauth2_member(access_token)
@@ -116,8 +126,10 @@ def download_metadata(master_token, output_csv, verbose=False, debug=False):
                 csv_writer.writerow([member_id, 'NA', 'None', 'NA'])
             else:
                 for data_item in project.project_data[member_id]['data']:
+                    logging.debug(data_item)
                     csv_writer.writerow([
-                        member_id, data_item['source'], data_item['basename'],
+                        member_id, data_item['source'],
+                        data_item['basename'].encode('utf-8'),
                         data_item['created']])
 
 
@@ -129,7 +141,7 @@ def download_metadata(master_token, output_csv, verbose=False, debug=False):
 @click.option('-v', '--verbose', help='Show INFO level logging', is_flag=True)
 @click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
 def upload_metadata(directory, create_csv='', create_json='', review='',
-             max_size='128m', verbose=False, debug=False):
+                    max_size='128m', verbose=False, debug=False):
     """
     Draft or review metadata files for uploading files to Open Humans.
 

@@ -278,3 +278,18 @@ def delete_file(file_basename, access_token, project_member_id):
     logging.info('Deleting {}'.format(file_basename))
     requests.post(url, data={'project_member_id': project_member_id,
                              'file_basename': file_basename})
+
+
+def read_id_list(filepath):
+    if not filepath:
+        return None
+    id_list = []
+    with open(filepath) as f:
+        for line in f:
+            line = line.rstrip()
+            if not re.match('^[0-9]{8}$', line):
+                raise('Each line in whitelist or blacklist is expected '
+                      'to contain an eight digit ID, and nothing else.')
+            else:
+                id_list.append(line)
+    return id_list

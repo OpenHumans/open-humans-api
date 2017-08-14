@@ -96,9 +96,16 @@ class OHProject:
                           max_bytes=parse_size(max_size))
 
     def download_all(self, target_dir, source=None, project_data=False,
+                     memberlist=None, excludelist=None,
                      max_size=MAX_SIZE_DEFAULT):
         members = self.project_data.keys()
         for member in members:
+            if not (memberlist is None) and member not in memberlist:
+                logging.debug('Skipping {}, not in memberlist'.format(member))
+                continue
+            if excludelist and member in excludelist:
+                logging.debug('Skipping {}, in excludelist'.format(member))
+                continue
             member_dir = os.path.join(target_dir, member)
             if not os.path.exists(member_dir):
                 os.mkdir(member_dir)

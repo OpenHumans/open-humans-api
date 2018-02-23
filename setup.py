@@ -8,6 +8,7 @@ def readme():
     with open('README.rst') as f:
         return f.read()
 
+
 # Add backport of futures unless Python version is 3.2 or later.
 install_requires = [
     'click>=6.3',
@@ -20,7 +21,7 @@ if sys.version_info < (3, 2):
 
 setup(
     name='open-humans-api',
-    author='Madeleine Ball',
+    author='Mad Price Ball',
     author_email='support@openhumans.org',
 
     url='https://github.com/OpenHumans/open-humans-api',
@@ -28,7 +29,7 @@ setup(
     description='Tools for working with Open Humans APIs',
     long_description=readme(),
 
-    version='0.1.3',
+    version='0.1.4',
 
     license='MIT',
 

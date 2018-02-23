@@ -8,8 +8,8 @@ from click import UsageError
 from humanfriendly import parse_size
 
 from .projects import OHProject
-from .utils import (exchange_oauth2_member, load_metadata_csv,
-                    mk_metadata_csv, read_id_list)
+from .api import exchange_oauth2_member
+from .utils_fs import load_metadata_csv, mk_metadata_csv, read_id_list
 
 MAX_FILE_DEFAULT = parse_size('128m')
 

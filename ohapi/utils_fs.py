@@ -1,6 +1,8 @@
+"""
+Utility functions to sync and work with Open Humans data in a local filesystem.
+"""
 import csv
 import hashlib
-import json
 import logging
 import os
 import re
@@ -11,13 +13,6 @@ import requests
 
 
 MAX_FILE_DEFAULT = parse_size('128m')
-
-
-def signal_handler_cb(signal_name, frame):
-    """
-    Exit on Ctrl-C.
-    """
-    os._exit(1)
 
 
 def guess_tags(filename):
@@ -158,50 +153,6 @@ def mk_metadata_csv(filedir, outputfilepath, max_bytes=MAX_FILE_DEFAULT):
                                   ])
 
 
-def get_page(url):
-    """
-    Get a single page of results.
-    """
-    response = requests.get(url)
-    if not response.status_code == 200:
-        err_msg = 'API response status code {}'.format(response.status_code)
-        if 'detail' in response.json():
-            err_msg = err_msg + ": {}".format(response.json()['detail'])
-        raise Exception(err_msg)
-    data = response.json()
-    return data
-
-
-def get_all_results(starting_page):
-    """
-    Given starting API query for Open Humans, iterate to get all results.
-    """
-    logging.info('Retrieving all results for {}'.format(starting_page))
-    page = starting_page
-    results = []
-
-    while True:
-        logging.debug('Getting data from: {}'.format(page))
-        data = get_page(page)
-        logging.debug('JSON data: {}'.format(data))
-        results = results + data['results']
-
-        if data['next']:
-            page = data['next']
-        else:
-            break
-
-    return results
-
-
-def exchange_oauth2_member(access_token):
-    url = ('https://www.openhumans.org/api/direct-sharing/project/'
-           'exchange-member/?access_token={}'.format(access_token))
-    member_data = get_page(url)
-    logging.debug('JSON data: {}'.format(member_data))
-    return member_data
-
-
 def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
     """
     Download a file.
@@ -234,50 +185,6 @@ def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
                 f.write(chunk)
 
     logging.info('Download complete: {}'.format(target_filepath))
-
-
-def upload_file(target_filepath, metadata, access_token, project_member_id,
-                remote_file_info=None, max_bytes=MAX_FILE_DEFAULT):
-    """
-    Upload a file.
-    """
-    filesize = os.stat(target_filepath).st_size
-    if filesize > max_bytes:
-        logging.info('Skipping {}, {} > {}'.format(
-            target_filepath, format_size(filesize), format_size(max_bytes)))
-        return
-
-    if remote_file_info:
-        response = requests.get(remote_file_info['download_url'], stream=True)
-        remote_size = int(response.headers['Content-Length'])
-        if remote_size == filesize:
-            logging.info('Skipping {}, remote exists with matching name and '
-                         'file size'.format(target_filepath))
-            return
-
-    url = ('https://www.openhumans.org/api/direct-sharing/project/'
-           'files/upload/?access_token={}'.format(access_token))
-
-    logging.info('Uploading {} ({})'.format(
-        target_filepath, format_size(filesize)))
-
-    r = requests.post(url,
-                      files={'data_file': open(target_filepath, 'rb')},
-                      data={'project_member_id': project_member_id,
-                            'metadata': json.dumps(metadata)})
-
-    logging.info('Upload complete: {}'.format(target_filepath))
-
-
-def delete_file(file_basename, access_token, project_member_id):
-    """
-    Delete a file.
-    """
-    url = ('https://www.openhumans.org/api/direct-sharing/project/files'
-           '/delete/?access_token={}'.format(access_token))
-    logging.info('Deleting {}'.format(file_basename))
-    requests.post(url, data={'project_member_id': project_member_id,
-                             'file_basename': file_basename})
 
 
 def read_id_list(filepath):

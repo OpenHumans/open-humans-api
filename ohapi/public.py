@@ -17,11 +17,18 @@ import requests
 
 from humanfriendly import format_size, parse_size
 
-from .utils import get_page, signal_handler_cb
+from .api import get_page
 
 
 BASE_URL = 'https://www.openhumans.org'
 BASE_URL_API = '{}/api/public-data/'.format(BASE_URL)
+
+
+def signal_handler_cb(signal_name, frame):
+    """
+    Exit on Ctrl-C.
+    """
+    os._exit(1)
 
 
 def download_url(result, directory, max_bytes):

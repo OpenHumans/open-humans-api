@@ -166,8 +166,7 @@ def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
         raise ValueError(
             "One (and only one) of the following must be specified: "
             "file_basename, file_id, or all_files is set to True.")
-    requests.post(url, data={'project_member_id': project_member_id,
-                             'file_basename': file_basename})
+    requests.post(url, data=data)
 
 
 # Alternate names for the same functions.

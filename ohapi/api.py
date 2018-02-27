@@ -172,3 +172,24 @@ def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
 # Alternate names for the same functions.
 def delete_files(*args, **kwargs):
     return delete_file(*args, **kwargs)
+
+
+def message(subject, message, access_token, all_members=False, project_member_ids=None, base_url=OH_BASE_URL):
+    """
+    send messages.
+    """
+    url = urlparse.urljoin(
+        base_url, '/api/direct-sharing/project/message/?{}'.format(
+        urlparse.urlencode({'access_token': access_token})))
+    if not(all_members) and not(project_member_ids):
+        requests.post(url,data={'subject': subject,
+                                'message': message})
+    elif all_members and project_member_ids:
+        raise ValueError(
+            "One (and only one) of the following must be specified: "
+            "project_members_id or all_members is set to True.")
+    else:
+        requests.post(url, data={'all_members': all_members,
+                     'project_member_ids': project_member_ids,
+                     'subject': subject,
+                     'message': message}) 

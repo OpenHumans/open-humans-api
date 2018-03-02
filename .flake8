@@ -1,0 +1,6 @@
+[flake8]
+exclude =
+  .git,
+  __pycache__,
+  docs,
+ignore = D100,D102,D105,D200,D203,D204,D205,D400

@@ -1,0 +1,21 @@
+language: python
+python:
+    - "3.5"
+    - "3.6"
+
+install:
+  - pip install -e.
+  - pip install coverage
+  - pip install pytest-cov
+before_script:
+  - mkdir bin
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > bin/cc-test-reporter
+  - chmod +x bin/cc-test-reporter
+  - bin/cc-test-reporter before-build
+
+script:
+  - py.test
+  - py.test --cov=. --cov-report xml:coverage.xml
+
+after_success:
+  - bin/cc-test-reporter after-build -t coverage.py

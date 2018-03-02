@@ -15,13 +15,23 @@ import requests
 MAX_FILE_DEFAULT = parse_size('128m')
 
 
+def strip_zip_suffix(filename):
+    if filename.endswith('.gz'):
+        return filename[:-3]
+    elif filename.endswith('.bz2'):
+        return filename[:-4]
+    else:
+        return filename
+
+
 def guess_tags(filename):
     tags = []
-    if filename.endswith('.vcf' or '.vcf.gz' or '.vcf.bz2'):
+    stripped_filename = strip_zip_suffix(filename)
+    if stripped_filename.endswith('.vcf'):
         tags.append('vcf')
-    if filename.endswith('.json' or '.json.gz' or '.json.bz2'):
+    if stripped_filename.endswith('.json'):
         tags.append('json')
-    if filename.endswith('.csv' or '.csv.gz' or '.csv.bz2'):
+    if stripped_filename.endswith('.csv'):
         tags.append('csv')
     return tags
 

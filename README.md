@@ -1,4 +1,6 @@
 # open-humans-api
+[![Build Status](https://travis-ci.org/OpenHumans/open-humans-api.svg?branch=master)](https://travis-ci.org/OpenHumans/open-humans-api) [![Maintainability](https://api.codeclimate.com/v1/badges/f44ae877944131bf59c2/maintainability)](https://codeclimate.com/github/OpenHumans/open-humans-api/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/f44ae877944131bf59c2/test_coverage)](https://codeclimate.com/github/OpenHumans/open-humans-api/test_coverage)
+
 
 This package aims to provide some tools to facilitate working with the Open
 Humans APIs.
@@ -9,7 +11,10 @@ downloads and uploads. These tools are listed below.
 ## Installation
 
 This package is distributed via PyPI. We recommend you install it using
-pip, e.g. `pip install open-humans-api`.
+pip, e.g. `pip install open-humans-api`. If you want to learn how to install
+this module to further develop it and contribute code please
+[read our `CONTRIBUTING.md`](https://github.com/OpenHumans/open-humans-api/blob/master/CONTRIBUTING.md)
+which explains all these things.
 
 ## Command line tools
 

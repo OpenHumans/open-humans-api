@@ -14,6 +14,13 @@ from .utils_fs import load_metadata_csv, mk_metadata_csv, read_id_list
 MAX_FILE_DEFAULT = parse_size('128m')
 
 
+def set_log_level(debug, verbose):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    elif verbose:
+        logging.basicConfig(level=logging.INFO)
+
+
 @click.command()
 @click.option('-d', '--directory',
               help='Target directory for downloaded files.', required=True)
@@ -47,6 +54,8 @@ def download(directory, master_token=None, member=None, access_token=None,
     (the project's own data files, instead of data from other sources) will be
     downloaded for each member.
     """
+    set_log_level(debug, verbose)
+
     if (memberlist or excludelist) and (member or access_token):
         raise UsageError('Please do not provide a memberlist or excludelist '
                          'when retrieving data for a single member.')
@@ -58,11 +67,6 @@ def download(directory, master_token=None, member=None, access_token=None,
     if (source and project_data):
         raise UsageError("It doesn't make sense to use both 'source' and"
                          "'project-data' options!")
-
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif verbose:
-        logging.basicConfig(level=logging.INFO)
 
     if master_token:
         project = OHProject(master_access_token=master_token)
@@ -109,10 +113,7 @@ def download_metadata(master_token, output_csv, verbose=False, debug=False):
     """
     Output CSV with metadata for a project's downloadable files in Open Humans.
     """
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif verbose:
-        logging.basicConfig(level=logging.INFO)
+    set_log_level(debug, verbose)
 
     project = OHProject(master_access_token=master_token)
 
@@ -148,10 +149,7 @@ def upload_metadata(directory, create_csv='', create_json='', review='',
     The target directory should either represent files for a single member (no
     subdirectories), or contain a subdirectory for each project member ID.
     """
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif verbose:
-        logging.basicConfig(level=logging.INFO)
+    set_log_level(debug, verbose)
 
     max_bytes = parse_size(max_size)
 
@@ -226,10 +224,7 @@ def upload(directory, metadata_csv, master_token=None, member=None,
         raise UsageError('Please specify either a master access token (-T), '
                          'or an OAuth2 user access token (-t).')
 
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif verbose:
-        logging.basicConfig(level=logging.INFO)
+    set_log_level(debug, verbose)
 
     if sync:
         mode = 'sync'

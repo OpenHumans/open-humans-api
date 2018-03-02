@@ -78,6 +78,44 @@ def validate_metadata(target_dir, metadata):
     return True
 
 
+def load_metadata_csv_single_user(csv_in, header, tags_idx):
+    """
+    Return the metadata as requested for a single user.
+    """
+    metadata = {}
+    for row in csv_in:
+        if row[0] == 'None' and [x == 'NA' for x in row[1:]]:
+            break
+        metadata[row[0]] = {
+            header[i]: row[i] for i in range(1, len(header)) if
+            i != tags_idx
+        }
+        metadata[row[0]]['tags'] = [t.strip() for t in
+                                    row[tags_idx].split(',') if
+                                    t.strip()]
+    return metadata
+
+
+def load_metadata_csv_multi_user(csv_in, header, tags_idx):
+    """
+    Return the metadata as requested for a single user.
+    """
+    metadata = {}
+    for row in csv_in:
+        if row[0] not in metadata:
+            metadata[row[0]] = {}
+        if row[1] == 'None' and all([x == 'NA' for x in row[2:]]):
+            continue
+        metadata[row[0]][row[1]] = {
+            header[i]: row[i] for i in range(2, len(header)) if
+            i != tags_idx
+        }
+        metadata[row[0]][row[1]]['tags'] = [t.strip() for t in
+                                            row[tags_idx].split(',') if
+                                            t.strip()]
+    return metadata
+
+
 def load_metadata_csv(input_filepath):
     """
     Return dict of metadata.
@@ -87,37 +125,15 @@ def load_metadata_csv(input_filepath):
     """
     with open(input_filepath) as f:
         csv_in = csv.reader(f)
-        header = csv_in.next()
+        header = next(csv_in)
         try:
             tags_idx = header.index('tags')
         except ValueError:
             tags_idx = None
         if header[0] == 'project_member_id':
-            metadata = {}
-            for row in csv_in:
-                if row[0] not in metadata:
-                    metadata[row[0]] = {}
-                if row[1] == 'None' and all([x == 'NA' for x in row[2:]]):
-                    continue
-                metadata[row[0]][row[1]] = {
-                    header[i]: row[i] for i in range(2, len(header)) if
-                    i != tags_idx
-                }
-                metadata[row[0]][row[1]]['tags'] = [t.strip() for t in
-                                                    row[tags_idx].split(',') if
-                                                    t.strip()]
+            metadata = load_metadata_csv_multi_user(csv_in, header, tags_idx)
         elif header[0] == 'filename':
-            metadata = {}
-            for row in csv_in:
-                if row[0] == 'None' and [x == 'NA' for x in row[1:]]:
-                    break
-                metadata[row[0]] = {
-                    header[i]: row[i] for i in range(1, len(header)) if
-                    i != tags_idx
-                }
-                metadata[row[0]]['tags'] = [t.strip() for t in
-                                            row[tags_idx].split(',') if
-                                            t.strip()]
+            metadata = load_metadata_csv_single_user(csv_in, header, tags_idx)
     return metadata
 
 

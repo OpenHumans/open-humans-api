@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import json
 import logging
 import os
@@ -28,12 +29,12 @@ def oauth2_auth_url(redirect_uri=None, client_id=None, base_url=OH_BASE_URL):
             raise SettingsError(
                 "Client ID not provided! Provide client_id as a parameter, "
                 "or set OHAPI_CLIENT_ID in your environment.")
-    params = {
-        'client_id': client_id,
-        'response_type': 'code'
-    }
+    params = OrderedDict([
+        ('client_id', client_id),
+        ('response_type', 'code'),
+    ])
     if redirect_uri:
-        params.update({'redirect_uri': redirect_uri})
+        params['redirect_uri'] = redirect_uri
 
     auth_url = urlparse.urljoin(
         base_url, '/direct-sharing/projects/oauth2/authorize/?{}'.format(
@@ -60,9 +61,9 @@ def oauth2_token_exchange(client_id, client_secret, redirect_uri,
             'grant_type': 'refresh_token',
             'refresh_token': refresh_token,
         }
+    token_url = urlparse.urljoin(base_url, '/oauth2/token/')
     req = requests.post(
-        '{}/oauth2/token/'.format(base_url),
-        data=data,
+        token_url, data=data,
         auth=requests.auth.HTTPBasicAuth(client_id, client_secret))
     data = req.json()
     return data
@@ -174,22 +175,24 @@ def delete_files(*args, **kwargs):
     return delete_file(*args, **kwargs)
 
 
-def message(subject, message, access_token, all_members=False, project_member_ids=None, base_url=OH_BASE_URL):
+def message(subject, message, access_token, all_members=False,
+            project_member_ids=None, base_url=OH_BASE_URL):
     """
     send messages.
     """
     url = urlparse.urljoin(
         base_url, '/api/direct-sharing/project/message/?{}'.format(
-        urlparse.urlencode({'access_token': access_token})))
+            urlparse.urlencode({'access_token': access_token})))
     if not(all_members) and not(project_member_ids):
-        requests.post(url,data={'subject': subject,
-                                'message': message})
+        requests.post(url, data={'subject': subject,
+                                 'message': message})
     elif all_members and project_member_ids:
         raise ValueError(
             "One (and only one) of the following must be specified: "
             "project_members_id or all_members is set to True.")
     else:
-        requests.post(url, data={'all_members': all_members,
-                     'project_member_ids': project_member_ids,
-                     'subject': subject,
-                     'message': message}) 
+        requests.post(url, data={
+            'all_members': all_members,
+            'project_member_ids': project_member_ids,
+            'subject': subject,
+            'message': message})

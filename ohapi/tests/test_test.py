@@ -1,5 +1,5 @@
 from unittest import TestCase
-from ohapi.utils_fs import guess_tags, load_metadata_csv
+from ohapi.utils_fs import (guess_tags, load_metadata_csv, validate_metadata)
 
 
 def test_test():
@@ -8,6 +8,7 @@ def test_test():
 
 
 class UtilsTest(TestCase):
+
     def setUp(self):
         pass
 
@@ -29,3 +30,8 @@ class UtilsTest(TestCase):
         metadata_files = load_metadata_csv('ohapi/tests/data/'
                                            'metadata_proj_file_key_works.csv')
         self.assertEqual(len(metadata_files.keys()), 2)
+
+    def test_validate_metadata(self):
+        directory = 'ohapi/tests/data/test_directory/'
+        metadata = {'file_1.json', 'file_2.json'}
+        self.assertEqual(validate_metadata(directory, metadata), True)

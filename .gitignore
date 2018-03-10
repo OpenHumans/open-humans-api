@@ -64,3 +64,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#Secret data used in development
+ohapi/tests/_config_params_api.py

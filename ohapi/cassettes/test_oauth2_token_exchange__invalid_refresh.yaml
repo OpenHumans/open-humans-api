@@ -1,12 +1,12 @@
 interactions:
 - request:
-    body: grant_type=refresh_token&refresh_token=refreshtokengoeshere
+    body: refresh_token=REFRESHTOKEN&grant_type=refresh_token
     headers:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
-      Authorization: [Basic Y2xpZW50aWQ6Y2xpZW50c2VjcmV0]
+      Authorization: [XXXXXXXX]
       Connection: [keep-alive]
-      Content-Length: ['64']
+      Content-Length: ['58']
       Content-Type: [application/x-www-form-urlencoded]
       User-Agent: [python-requests/2.18.4]
     method: POST
@@ -18,7 +18,7 @@ interactions:
       Connection: [close]
       Content-Language: [en]
       Content-Type: [application/json]
-      Date: ['Sun, 04 Mar 2018 23:21:40 GMT']
+      Date: ['Sat, 10 Mar 2018 04:03:27 GMT']
       Pragma: [no-cache]
       Server: [Cowboy]
       Vary: ['Accept-Language, Cookie']

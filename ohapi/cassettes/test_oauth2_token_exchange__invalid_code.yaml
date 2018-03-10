@@ -1,10 +1,10 @@
 interactions:
 - request:
-    body: grant_type=authorization_code&redirect_uri=http%3A%2F%2F127.0.0.1%3A5000%2Fauthorize_openhumans%2F&code=codegoeshere
+    body: redirect_uri=http%3A%2F%2F127.0.0.1%3A5000%2Fauthorize_openhumans%2F&grant_type=authorization_code&code=CODE
     headers:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
-      Authorization: [Basic Y2xpZW50aWQ6Y2xpZW50c2VjcmV0]
+      Authorization: [XXXXXXXX]
       Connection: [keep-alive]
       Content-Length: ['134']
       Content-Type: [application/x-www-form-urlencoded]
@@ -18,7 +18,7 @@ interactions:
       Connection: [close]
       Content-Language: [en]
       Content-Type: [application/json]
-      Date: ['Sun, 04 Mar 2018 22:56:43 GMT']
+      Date: ['Sat, 10 Mar 2018 04:00:12 GMT']
       Pragma: [no-cache]
       Server: [Cowboy]
       Vary: ['Accept-Language, Cookie']

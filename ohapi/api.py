@@ -113,8 +113,8 @@ def exchange_oauth2_member(access_token):
     return member_data
 
 
-def upload_file(target_filepath, metadata, access_token, project_member_id,
-                remote_file_info=None, base_url=OH_BASE_URL,
+def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
+                remote_file_info=None, project_member_id=None,
                 max_bytes=MAX_FILE_DEFAULT):
     """
     Upload a file.
@@ -140,8 +140,11 @@ def upload_file(target_filepath, metadata, access_token, project_member_id,
     logging.info('Uploading {} ({})'.format(
         target_filepath, format_size(filesize)))
 
-    r = requests.post(url,
-                      files={'data_file': open(target_filepath, 'rb')},
+    if not(project_member_id):
+        response = exchange_oauth2_member(access_token)
+        project_member_id = response['project_member_id']
+
+    requests.post(url, files={'data_file': open(target_filepath, 'rb')},
                       data={'project_member_id': project_member_id,
                             'metadata': json.dumps(metadata)})
 

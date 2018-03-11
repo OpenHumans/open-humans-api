@@ -1,0 +1,27 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.9.1]
+    method: GET
+    uri: https://www.openhumans.org/api/direct-sharing/project/exchange-member/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"created":"created_date_time","project_member_id":"PMI","message_permission":true,"sources_shared":[],"username":"test_user","data":[]}'}
+    headers:
+      Allow: ['GET, HEAD, OPTIONS']
+      Cache-Control: ['max-age=0, no-cache, must-revalidate, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Tue, 06 Mar 2018 09:27:43 GMT']
+      Expires: ['Tue, 06 Mar 2018 09:27:44 GMT']
+      Last-Modified: ['Tue, 06 Mar 2018 09:27:44 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 200, message: OK}
+version: 1

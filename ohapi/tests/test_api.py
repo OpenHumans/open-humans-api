@@ -4,7 +4,7 @@ import pytest
 import vcr
 
 from ohapi.api import (
-    SettingsError, oauth2_auth_url, oauth2_token_exchange)
+    SettingsError, oauth2_auth_url, oauth2_token_exchange, get_page)
 
 parameter_defaults = {
     'CLIENT_ID_VALID': 'validclientid',
@@ -16,6 +16,7 @@ parameter_defaults = {
     'CODE_INVALID': 'invalidcode',
     'REFRESH_TOKEN_INVALID': 'invalidrefreshtoken',
     'REDIRECT_URI': 'http://127.0.0.1:5000/authorize_openhumans/',
+    'ACCESS_TOKEN': 'accesstoken'
 }
 
 """
@@ -132,3 +133,28 @@ class APITestOAuthTokenExchange(TestCase):
             refresh_token=REFRESH_TOKEN_INVALID, client_id=CLIENT_ID_VALID,
             client_secret=CLIENT_SECRET_VALID, redirect_uri=REDIRECT_URI)
         assert data == {'error': 'invalid_grant'}
+
+
+class APITestGetPage(TestCase):
+
+    def setUp(self):
+        pass
+
+    @my_vcr.use_cassette()
+    def test_get_page_with_results(self):
+        url = ('https://www.openhumans.org/api/direct-sharing/project/'
+               'exchange-member/?'
+               'access_token={}'.format(ACCESS_TOKEN))
+        response = get_page(url)
+        self.assertEqual(response['project_member_id'], 'PMI')
+        self.assertEqual(response['message_permission'], True)
+        self.assertEqual(response['data'], [])
+        self.assertEqual(response['username'], 'test_user')
+        self.assertEqual(response['sources_shared'], [])
+        self.assertEqual(response['created'], 'created_date_time')
+
+    @my_vcr.use_cassette()
+    def test_get_page_invalid_access_token(self):
+        url = ('https://www.openhumans.org/api/direct-sharing/project/'
+               'exchange-member/?access_token={}'.format("invalid_token"))
+        self.assertRaises(Exception, get_page, url)

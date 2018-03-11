@@ -1,0 +1,28 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.9.1]
+    method: GET
+    uri: https://www.openhumans.org/api/direct-sharing/project/exchange-member/?access_token=invalid_token
+  response:
+    body: {string: '{"detail":"Authentication credentials were not provided."}'}
+    headers:
+      Allow: ['GET, HEAD, OPTIONS']
+      Cache-Control: ['no-cache, no-store, must-revalidate, max-age=0']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Tue, 06 Mar 2018 09:27:43 GMT']
+      Expires: ['Tue, 06 Mar 2018 09:27:43 GMT']
+      Last-Modified: ['Tue, 06 Mar 2018 09:27:43 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      Www-Authenticate: [Bearer realm="api"]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 401, message: Unauthorized}
+version: 1

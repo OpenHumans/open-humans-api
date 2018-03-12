@@ -1,0 +1,29 @@
+interactions:
+- request:
+    body: project_member_ids=VALIDPMI1&project_member_ids=VALIDPMI2&subject=testsubject&all_members=False&message=testmessage
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['115']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/message/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '"success"'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['must-revalidate, max-age=0, no-cache, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Sun, 11 Mar 2018 16:30:13 GMT']
+      Expires: ['Sun, 11 Mar 2018 16:30:13 GMT']
+      Last-Modified: ['Sun, 11 Mar 2018 16:30:13 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 200, message: OK}
+version: 1

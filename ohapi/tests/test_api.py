@@ -4,7 +4,7 @@ import pytest
 import vcr
 
 from ohapi.api import (
-    SettingsError, oauth2_auth_url, oauth2_token_exchange, get_page)
+    SettingsError, oauth2_auth_url, oauth2_token_exchange, get_page, message)
 
 parameter_defaults = {
     'CLIENT_ID_VALID': 'validclientid',
@@ -16,7 +16,16 @@ parameter_defaults = {
     'CODE_INVALID': 'invalidcode',
     'REFRESH_TOKEN_INVALID': 'invalidrefreshtoken',
     'REDIRECT_URI': 'http://127.0.0.1:5000/authorize_openhumans/',
-    'ACCESS_TOKEN': 'accesstoken'
+    'ACCESS_TOKEN': 'accesstoken',
+    'ACCESS_TOKEN_EXPIRED': 'accesstokenexpired',
+    'ACCESS_TOKEN_INVALID': 'accesstokeninvalid',
+    'MASTER_ACCESS_TOKEN': 'masteraccesstoken',
+    'INVALID_PMI1': 'invalidprojectmemberid1',
+    'INVALID_PMI2': 'invalidprojectmemberid2',
+    'VALID_PMI1': 'validprojectmemberid1',
+    'VALID_PMI2': 'validprojectmemberid2',
+    'SUBJECT': 'testsubject',
+    'MESSAGE': 'testmessage',
 }
 
 """
@@ -158,3 +167,65 @@ class APITestGetPage(TestCase):
         url = ('https://www.openhumans.org/api/direct-sharing/project/'
                'exchange-member/?access_token={}'.format("invalid_token"))
         self.assertRaises(Exception, get_page, url)
+
+
+class APITestMessage(TestCase):
+
+    def setUp(self):
+        pass
+
+    @my_vcr.use_cassette()
+    def test_message_valid_access_token(self):
+        response = message(subject=SUBJECT, message=MESSAGE,
+                           access_token=ACCESS_TOKEN)
+        self.assertEqual(response.status_code, 200)
+
+    @my_vcr.use_cassette()
+    def test_message_expired_access_token(self):
+        response = message(subject=SUBJECT, message=MESSAGE,
+                           access_token=ACCESS_TOKEN_EXPIRED)
+        assert response.json() == {"detail": "Expired token."}
+
+    @my_vcr.use_cassette()
+    def test_message_invalid_access_token(self):
+        response = message(subject=SUBJECT, message=MESSAGE,
+                           access_token=ACCESS_TOKEN_INVALID)
+        assert response.json() == {"detail": "Invalid token."}
+
+    @my_vcr.use_cassette()
+    def test_message_all_members_true_project_member_id_none(self):
+        response = message(all_members=True, subject=SUBJECT, message=MESSAGE,
+                           access_token=ACCESS_TOKEN)
+        self.assertEqual(response.status_code, 200)
+
+    @my_vcr.use_cassette()
+    def test_message_all_members_true_project_member_id_not_none(self):
+        self.assertRaises(Exception, message, all_members=True,
+                          project_member_ids=['abcdef', 'sdf'],
+                          subject=SUBJECT, message=MESSAGE,
+                          access_token=ACCESS_TOKEN)
+
+    @my_vcr.use_cassette()
+    def test_message_all_members_false_projectmemberid_has_invalid_char(self):
+        response = message(project_member_ids=['abcdef1', 'test'],
+                           subject=SUBJECT, message=MESSAGE,
+                           access_token=MASTER_ACCESS_TOKEN)
+        assert response.json() == {"errors": {"project_member_ids":
+                                   ["Project member IDs are always 8" +
+                                    " digits long."]}}
+
+    @my_vcr.use_cassette()
+    def test_message_all_members_false_projectmemberid_has_invalid_digit(self):
+        response = message(project_member_ids=[INVALID_PMI1, INVALID_PMI2],
+                           subject=SUBJECT, message=MESSAGE,
+                           access_token=MASTER_ACCESS_TOKEN)
+        assert response.json() == {"errors": {"project_member_ids":
+                                   ["Invalid project member ID(s):" +
+                                    " invalidPMI2"]}}
+
+    @my_vcr.use_cassette()
+    def test_message_all_members_false_project_member_id_not_none_valid(self):
+        response = message(project_member_ids=[VALID_PMI1, VALID_PMI2],
+                           subject=SUBJECT, message=MESSAGE,
+                           access_token=ACCESS_TOKEN)
+        self.assertEqual(response.status_code, 200)

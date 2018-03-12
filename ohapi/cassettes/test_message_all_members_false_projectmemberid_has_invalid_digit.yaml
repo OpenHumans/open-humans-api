@@ -1,0 +1,30 @@
+interactions:
+- request:
+    body: project_member_ids=invalidPMI1&project_member_ids=invalidPMI2&subject=test_subject&all_members=False&message=test_message
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['115']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/message/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"errors": {"project_member_ids":["Invalid project member ID(s):
+        invalidPMI2"]}}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['must-revalidate, max-age=0, no-cache, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Sun, 11 Mar 2018 16:17:55 GMT']
+      Expires: ['Sun, 11 Mar 2018 16:17:56 GMT']
+      Last-Modified: ['Sun, 11 Mar 2018 16:17:56 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 400, message: Bad Request}
+version: 1

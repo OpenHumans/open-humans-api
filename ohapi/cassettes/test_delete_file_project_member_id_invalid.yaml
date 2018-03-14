@@ -1,0 +1,29 @@
+interactions:
+- request:
+    body: project_member_id=1234&all_files=True
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['37']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.18.4]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/delete/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"project_member_id":"project_member_id is invalid"}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['no-store, max-age=0, must-revalidate, no-cache']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Tue, 13 Mar 2018 17:18:00 GMT']
+      Expires: ['Tue, 13 Mar 2018 17:18:00 GMT']
+      Last-Modified: ['Tue, 13 Mar 2018 17:18:00 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 400, message: Bad Request}
+version: 1

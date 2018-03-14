@@ -1,0 +1,30 @@
+interactions:
+- request:
+    body: all_files=True&project_member_id=59319749
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['41']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.18.4]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/delete/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"detail":"Expired token."}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['no-cache, max-age=0, must-revalidate, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Wed, 14 Mar 2018 13:10:03 GMT']
+      Expires: ['Wed, 14 Mar 2018 13:10:04 GMT']
+      Last-Modified: ['Wed, 14 Mar 2018 13:10:04 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      Www-Authenticate: [Bearer realm="api"]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 401, message: Unauthorized}
+version: 1

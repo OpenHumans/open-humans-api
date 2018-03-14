@@ -4,7 +4,8 @@ import pytest
 import vcr
 
 from ohapi.api import (
-    SettingsError, oauth2_auth_url, oauth2_token_exchange, get_page, message)
+    SettingsError, oauth2_auth_url, oauth2_token_exchange,
+    get_page, message, delete_file)
 
 parameter_defaults = {
     'CLIENT_ID_VALID': 'validclientid',
@@ -26,6 +27,7 @@ parameter_defaults = {
     'VALID_PMI2': 'validprojectmemberid2',
     'SUBJECT': 'testsubject',
     'MESSAGE': 'testmessage',
+
 }
 
 """
@@ -57,7 +59,8 @@ for param in parameter_defaults:
 
 FILTERSET = [('access_token', 'ACCESSTOKEN'), ('client_id', 'CLIENTID'),
              ('client_secret', 'CLIENTSECRET'), ('code', 'CODE'),
-             ('refresh_token', 'REFRESHTOKEN')]
+             ('refresh_token', 'REFRESHTOKEN'),
+             ('invalid_access_token', 'INVALIDACCESSTOKEN')]
 
 my_vcr = vcr.VCR(path_transformer=vcr.VCR.ensure_suffix('.yaml'),
                  cassette_library_dir='ohapi/cassettes',
@@ -210,22 +213,63 @@ class APITestMessage(TestCase):
         response = message(project_member_ids=['abcdef1', 'test'],
                            subject=SUBJECT, message=MESSAGE,
                            access_token=MASTER_ACCESS_TOKEN)
-        assert response.json() == {"errors": {"project_member_ids":
-                                   ["Project member IDs are always 8" +
-                                    " digits long."]}}
+        assert response.json() == {"errors":
+                                   {"project_member_ids":
+                                    ["Project member IDs are always 8" +
+                                     " digits long."]}}
 
     @my_vcr.use_cassette()
     def test_message_all_members_false_projectmemberid_has_invalid_digit(self):
         response = message(project_member_ids=[INVALID_PMI1, INVALID_PMI2],
                            subject=SUBJECT, message=MESSAGE,
                            access_token=MASTER_ACCESS_TOKEN)
-        assert response.json() == {"errors": {"project_member_ids":
-                                   ["Invalid project member ID(s):" +
-                                    " invalidPMI2"]}}
+        assert response.json() == {"errors":
+                                   {"project_member_ids":
+                                    ["Invalid project member ID(s):" +
+                                     " invalidPMI2"]}}
 
     @my_vcr.use_cassette()
     def test_message_all_members_false_project_member_id_not_none_valid(self):
         response = message(project_member_ids=[VALID_PMI1, VALID_PMI2],
                            subject=SUBJECT, message=MESSAGE,
                            access_token=ACCESS_TOKEN)
+        self.assertEqual(response.status_code, 200)
+
+
+class APITestDeleteFile(TestCase):
+
+    def setUp(self):
+        pass
+
+    @my_vcr.use_cassette()
+    def test_delete_file__invalid_access_token(self):
+        response = delete_file(
+            access_token=ACCESS_TOKEN_INVALID, project_member_id='59319749',
+            all_files=True)
+        assert response.json() == {"detail": "Invalid token."}
+
+    @my_vcr.use_cassette()
+    def test_delete_file_project_member_id_given(self):
+        response = delete_file(access_token=ACCESS_TOKEN,
+                               project_member_id='59319749', all_files=True)
+        self.assertEqual(response.status_code, 200)
+
+    @my_vcr.use_cassette()
+    def test_delete_file_project_member_id_invalid(self):
+        response = delete_file(access_token=ACCESS_TOKEN, all_files=True,
+                               project_member_id='1234')
+        self.assertEqual(response.status_code, 400)
+
+    @my_vcr.use_cassette()
+    def test_delete_file__expired_access_token(self):
+        response = delete_file(access_token=ACCESS_TOKEN_EXPIRED,
+                               all_files=True,
+                               project_member_id='59319749')
+        assert response.json() == {"detail": "Expired token."}
+
+    @my_vcr.use_cassette()
+    def test_delete_file__valid_access_token(self):
+        response = delete_file(
+            access_token=ACCESS_TOKEN, project_member_id='59319749',
+            all_files=True)
         self.assertEqual(response.status_code, 200)

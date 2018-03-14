@@ -2,3 +2,6 @@ pytest
 pytest-cov
 vcrpy
 flake8
+arrow
+humanfriendly
+requests

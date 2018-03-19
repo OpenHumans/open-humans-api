@@ -102,7 +102,12 @@ def download_url(result, directory, max_bytes):
               is_flag=True)
 @click.option('--debug', help='Report DEBUG level logging to stdout.',
               is_flag=True)
-def download(source, username, directory, max_size, quiet, debug):
+def download_cli(source, username, directory, max_size, quiet, debug):
+    return download(source, username, directory, max_size, quiet, debug)
+
+
+def download(source=None, username=None, directory='.', max_size='128m',
+             quiet=None, debug=None):
     """
     Download public data from Open Humans.
     """

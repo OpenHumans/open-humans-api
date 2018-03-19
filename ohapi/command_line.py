@@ -38,6 +38,15 @@ def set_log_level(debug, verbose):
               is_flag=True)
 @click.option('--memberlist', help='Text file with whitelist IDs to retrieve')
 @click.option('--excludelist', help='Text file with blacklist IDs to avoid')
+def download_cli(directory, master_token=None, member=None, access_token=None,
+                 source=None, project_data=False, max_size='128m',
+                 verbose=False, debug=False, memberlist=None,
+                 excludelist=None):
+    return download(directory, master_token, member, access_token, source,
+                    project_data, max_size, verbose, debug, memberlist,
+                    excludelist)
+
+
 def download(directory, master_token=None, member=None, access_token=None,
              source=None, project_data=False, max_size='128m', verbose=False,
              debug=False, memberlist=None, excludelist=None):
@@ -109,6 +118,11 @@ def download(directory, master_token=None, member=None, access_token=None,
 @click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
 @click.option('--output-csv', help="Output project metedata CSV",
               required=True)
+def download_metadata_cli(master_token, output_csv, verbose=False,
+                          debug=False):
+    return download_metadata(master_token, output_csv, verbose, debug)
+
+
 def download_metadata(master_token, output_csv, verbose=False, debug=False):
     """
     Output CSV with metadata for a project's downloadable files in Open Humans.
@@ -141,6 +155,12 @@ def download_metadata(master_token, output_csv, verbose=False, debug=False):
               default='128m', show_default=True)
 @click.option('-v', '--verbose', help='Show INFO level logging', is_flag=True)
 @click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
+def upload_metadata_cli(directory, create_csv='', create_json='', review='',
+                        max_size='128m', verbose=False, debug=False):
+    return upload_metadata(directory, create_csv, create_json, review,
+                           max_size, verbose, debug)
+
+
 def upload_metadata(directory, create_csv='', create_json='', review='',
                     max_size='128m', verbose=False, debug=False):
     """
@@ -175,6 +195,14 @@ def upload_metadata(directory, create_csv='', create_json='', review='',
               is_flag=True)
 @click.option('--debug', help='Report DEBUG level logging to stdout.',
               is_flag=True)
+def upload_cli(directory, metadata_csv, master_token=None, member=None,
+               access_token=None, safe=False, sync=False, max_size='128m',
+               mode='default', verbose=False, debug=False):
+    return upload(directory, metadata_csv, master_token, member,
+                  access_token, safe, sync, max_size,
+                  mode, verbose, debug)
+
+
 def upload(directory, metadata_csv, master_token=None, member=None,
            access_token=None, safe=False, sync=False, max_size='128m',
            mode='default', verbose=False, debug=False):

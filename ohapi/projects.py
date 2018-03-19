@@ -36,6 +36,7 @@ class OHProject:
         results = get_all_results(url)
         self.project_data = {result['project_member_id']: result for
                              result in results}
+        return self.project_data
 
     @classmethod
     def download_member_project_data(cls, member_data, target_member_dir,

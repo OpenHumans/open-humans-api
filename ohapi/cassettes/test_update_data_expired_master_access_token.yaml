@@ -1,0 +1,28 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.9.1]
+    method: GET
+    uri: https://www.openhumans.org/api/direct-sharing/project/members/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"detail":"Expired token."}'}
+    headers:
+      Allow: ['GET, HEAD, OPTIONS']
+      Cache-Control: ['must-revalidate, no-store, no-cache, max-age=0']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Mon, 19 Mar 2018 05:38:59 GMT']
+      Expires: ['Mon, 19 Mar 2018 05:38:59 GMT']
+      Last-Modified: ['Mon, 19 Mar 2018 05:38:59 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      Www-Authenticate: [Bearer realm="api"]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 401, message: Unauthorized}
+version: 1

@@ -123,7 +123,7 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     if filesize > max_bytes:
         logging.info('Skipping {}, {} > {}'.format(
             target_filepath, format_size(filesize), format_size(max_bytes)))
-        return
+        raise ValueError("Maximum file size exceeded")
 
     if remote_file_info:
         response = requests.get(remote_file_info['download_url'], stream=True)
@@ -131,7 +131,7 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
         if remote_size == filesize:
             logging.info('Skipping {}, remote exists with matching name and '
                          'file size'.format(target_filepath))
-            return
+            raise ValueError("Remote exist with matching name and file size")
 
     url = urlparse.urljoin(
         base_url, '/api/direct-sharing/project/files/upload/?{}'.format(
@@ -144,9 +144,9 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
         response = exchange_oauth2_member(access_token)
         project_member_id = response['project_member_id']
 
-    requests.post(url, files={'data_file': open(target_filepath, 'rb')},
-                      data={'project_member_id': project_member_id,
-                            'metadata': json.dumps(metadata)})
+    return requests.post(url, files={'data_file': open(target_filepath, 'rb')},
+                         data={'project_member_id': project_member_id,
+                         'metadata': json.dumps(metadata)})
 
     logging.info('Upload complete: {}'.format(target_filepath))
 
@@ -196,7 +196,7 @@ def message(subject, message, access_token, all_members=False,
             "project_members_id or all_members is set to True.")
     else:
         return requests.post(url, data={
-               'all_members': all_members,
-               'project_member_ids': project_member_ids,
-               'subject': subject,
-               'message': message})
+                             'all_members': all_members,
+                             'project_member_ids': project_member_ids,
+                             'subject': subject,
+                             'message': message})

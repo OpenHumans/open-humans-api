@@ -1,0 +1,34 @@
+interactions:
+- request:
+    body: "--9d21cbc3924b4cdab8520b1038fb4976\r\nContent-Disposition: form-data; name=\"\
+      metadata\"\r\n\r\n{\"tags\": [\"test_tag\"], \"description\": \"test_file\"\
+      }\r\n--9d21cbc3924b4cdab8520b1038fb4976\r\nContent-Disposition: form-data; name=\"\
+      project_member_id\"\r\n\r\n40110289\r\n--9d21cbc3924b4cdab8520b1038fb4976\r\n\
+      Content-Disposition: form-data; name=\"data_file\"; filename=\"foo\"\r\n\r\n\
+      \r\n--9d21cbc3924b4cdab8520b1038fb4976--\r\n"
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['389']
+      Content-Type: [multipart/form-data; boundary=9d21cbc3924b4cdab8520b1038fb4976]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"detail":"Expired token."}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['must-revalidate, max-age=0, no-cache, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Thu, 15 Mar 2018 10:52:10 GMT']
+      Expires: ['Thu, 15 Mar 2018 10:52:10 GMT']
+      Last-Modified: ['Thu, 15 Mar 2018 10:52:10 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 401, message: Unauthorized}
+version: 1

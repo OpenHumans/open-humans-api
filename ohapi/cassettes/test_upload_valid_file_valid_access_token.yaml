@@ -1,0 +1,34 @@
+interactions:
+- request:
+    body: "--3e5206a0c3604219bc509f3c9087456e\r\nContent-Disposition: form-data; name=\"\
+      project_member_id\"\r\n\r\n40110289\r\n--3e5206a0c3604219bc509f3c9087456e\r\n\
+      Content-Disposition: form-data; name=\"metadata\"\r\n\r\n{\"description\": \"\
+      test_file\", \"tags\": [\"test_tag\"]}\r\n--3e5206a0c3604219bc509f3c9087456e\r\
+      \nContent-Disposition: form-data; name=\"data_file\"; filename=\"foo\"\r\n\r\
+      \nsome stuff\r\n--3e5206a0c3604219bc509f3c9087456e--\r\n"
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['399']
+      Content-Type: [multipart/form-data; boundary=3e5206a0c3604219bc509f3c9087456e]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"id":"file_id"}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['no-cache, max-age=0, must-revalidate, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Thu, 15 Mar 2018 10:42:42 GMT']
+      Expires: ['Thu, 15 Mar 2018 10:42:42 GMT']
+      Last-Modified: ['Thu, 15 Mar 2018 10:42:42 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 201, message: Created}
+version: 1

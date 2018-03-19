@@ -1,12 +1,60 @@
 from unittest import TestCase
-from ohapi.utils_fs import (guess_tags, load_metadata_csv,
-                            validate_metadata, characterize_local_files,
-                            read_id_list)
-from humanfriendly import parse_size
+
 import arrow
 import os
+import vcr
+
+from ohapi.utils_fs import (guess_tags, load_metadata_csv,
+                            validate_metadata, characterize_local_files,
+                            read_id_list, download_file)
+from humanfriendly import parse_size
 
 MAX_FILE_DEFAULT = parse_size('128m')
+
+parameter_defaults = {
+    'CLIENT_ID_VALID': 'validclientid',
+    'CLIENT_SECRET_VALID': 'validclientsecret',
+    'CODE_VALID': 'validcode',
+    'REFRESH_TOKEN_VALID': 'validrefreshtoken',
+    'CLIENT_ID_INVALID': 'invalidclientid',
+    'CLIENT_SECRET_INVALID': 'invalidclientsecret',
+    'CODE_INVALID': 'invalidcode',
+    'REFRESH_TOKEN_INVALID': 'invalidrefreshtoken',
+    'REDIRECT_URI': 'http://127.0.0.1:5000/authorize_openhumans/',
+    'ACCESS_TOKEN': 'accesstoken',
+    'ACCESS_TOKEN_EXPIRED': 'accesstokenexpired',
+    'ACCESS_TOKEN_INVALID': 'accesstokeninvalid',
+    'MASTER_ACCESS_TOKEN': 'masteraccesstoken',
+    'INVALID_PMI1': 'invalidprojectmemberid1',
+    'INVALID_PMI2': 'invalidprojectmemberid2',
+    'VALID_PMI1': 'validprojectmemberid1',
+    'VALID_PMI2': 'validprojectmemberid2',
+    'SUBJECT': 'testsubject',
+    'MESSAGE': 'testmessage',
+
+}
+
+try:
+    from _config_params_api import params
+    for param in params:
+        parameter_defaults[param] = params[param]
+except ImportError:
+    pass
+
+for param in parameter_defaults:
+    locals()[param] = parameter_defaults[param]
+
+
+FILTERSET = [('access_token', 'ACCESSTOKEN'), ('client_id', 'CLIENTID'),
+             ('client_secret', 'CLIENTSECRET'), ('code', 'CODE'),
+             ('refresh_token', 'REFRESHTOKEN'),
+             ('invalid_access_token', 'INVALIDACCESSTOKEN')]
+
+my_vcr = vcr.VCR(path_transformer=vcr.VCR.ensure_suffix('.yaml'),
+                 cassette_library_dir='ohapi/cassettes',
+                 filter_headers=[('Authorization', 'XXXXXXXX')],
+                 filter_query_parameters=FILTERSET,
+                 filter_post_data_parameters=FILTERSET)
 
 
 def test_test():
@@ -74,3 +122,11 @@ class UtilsTest(TestCase):
         FILEPATH = os.path.join(filedir, filename)
         response = read_id_list(filepath=FILEPATH)
         self.assertEqual(response, ['12345678'])
+
+    @my_vcr.use_cassette()
+    def test_download_file_valid_url(self):
+        FILEPATH = 'ohapi/tests/data/test_download_dir/test_download_file'
+        DOWNLOAD_URL = 'http://www.loremipsum.de/downloads/version1.txt'
+        response = download_file(
+            download_url=DOWNLOAD_URL, target_filepath=FILEPATH)
+        self.assertEqual(response.status_code, 200)

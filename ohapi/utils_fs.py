@@ -189,7 +189,7 @@ def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
     if size > max_bytes:
         logging.info('Skipping {}, {} > {}'.format(
             target_filepath, format_size(size), format_size(max_bytes)))
-        return
+        return response
 
     logging.info('Downloading {} ({})'.format(
         target_filepath, format_size(size)))
@@ -199,7 +199,7 @@ def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
         if stat.st_size == size:
             logging.info('Skipping, file exists and is the right '
                          'size: {}'.format(target_filepath))
-            return
+            return response
         else:
             logging.info('Replacing, file exists and is the wrong '
                          'size: {}'.format(target_filepath))
@@ -211,6 +211,7 @@ def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
                 f.write(chunk)
 
     logging.info('Download complete: {}'.format(target_filepath))
+    return response
 
 
 def read_id_list(filepath):

@@ -105,9 +105,11 @@ def get_all_results(starting_page):
     return results
 
 
-def exchange_oauth2_member(access_token):
-    url = ('https://www.openhumans.org/api/direct-sharing/project/'
-           'exchange-member/?access_token={}'.format(access_token))
+def exchange_oauth2_member(access_token, base_url=OH_BASE_URL):
+    url = urlparse.urljoin(
+        base_url,
+        '/api/direct-sharing/project/exchange-member/?{}'.format(
+            urlparse.urlencode({'access_token': access_token})))
     member_data = get_page(url)
     logging.debug('JSON data: {}'.format(member_data))
     return member_data
@@ -146,7 +148,7 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
 
     return requests.post(url, files={'data_file': open(target_filepath, 'rb')},
                          data={'project_member_id': project_member_id,
-                         'metadata': json.dumps(metadata)})
+                               'metadata': json.dumps(metadata)})
 
     logging.info('Upload complete: {}'.format(target_filepath))
 

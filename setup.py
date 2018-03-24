@@ -59,6 +59,7 @@ setup(
             'ohproj-download-metadata = ohapi.command_line:download_metadata_cli',
             'ohproj-upload = ohapi.command_line:upload_cli',
             'ohproj-upload-metadata = ohapi.command_line:upload_metadata_cli',
+            'ohproj-message = ohapi.command_line:message_cli'
         ]
     },
 

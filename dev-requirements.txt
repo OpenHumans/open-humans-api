@@ -5,3 +5,6 @@ flake8
 arrow
 humanfriendly
 requests
+click
+mock
+sphinx

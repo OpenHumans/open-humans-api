@@ -228,10 +228,10 @@ def upload(directory, metadata_csv, master_token=None, member=None,
 
     \b
     If uploading for a specific member:
-        (1) The local directory should not contain subdirectories.
-        (2) The metadata CSV should have the following format:
-            1st column: filenames
-            2nd & additional columns: Metadata fields (see below)
+    (1) The local directory should not contain subdirectories.
+    (2) The metadata CSV should have the following format:
+    1st column: filenames
+    2nd & additional columns: Metadata fields (see below)
 
     The default behavior is to overwrite files with matching filenames on
     Open Humans, but not otherwise delete files. (Use --safe or --sync to
@@ -239,9 +239,9 @@ def upload(directory, metadata_csv, master_token=None, member=None,
 
     \b
     If included, the following metadata columns should be correctly formatted:
-        'tags': should be comma-separated strings
-        'md5': should match the file's md5 hexdigest
-        'creation_date', 'start_date', 'end_date': ISO 8601 dates or datetimes
+    'tags': should be comma-separated strings
+    'md5': should match the file's md5 hexdigest
+    'creation_date', 'start_date', 'end_date': ISO 8601 dates or datetimes
 
     Other metedata fields (e.g. 'description') can be arbitrary strings.
     """

@@ -233,3 +233,55 @@ Uploading that data with a master access token:
 ::
 
     $ ohproj-upload -T MASTER_ACCESS_TOKEN --metadata-csv member_data_metadata.csv -d member_data
+
+Setting up documentation locally
+------------
+
+Navigate to the docs folder.
+
+::
+
+    $ cd docs
+
+Run the make html command
+
+::
+
+    $ make html
+
+The documentation will be in docs_html folder.
+
+::
+
+    $ cd docs_html
+
+Open index.html
+
+Rebuilding the documentation locally
+------------
+
+Navigate to the docs folder.
+
+::
+
+    $ cd docs
+
+Run the make clean command
+
+::
+
+    $ make clean
+
+Run the make html command
+
+::
+
+    $ make html
+
+The documentation will be in docs_html folder.
+
+::
+
+    $ cd docs_html
+
+Open index.html

@@ -9,7 +9,7 @@ from click import UsageError
 
 from humanfriendly import parse_size
 
-from .api import OH_BASE_URL, exchange_oauth2_member, message
+from .api import OH_BASE_URL, exchange_oauth2_member, message, delete_file
 
 from .projects import OHProject
 
@@ -326,3 +326,21 @@ def message_cli(subject, message_body, access_token, all_members=False,
         project_member_ids = re.split(r'[ ,\r\n]+', project_member_ids)
     return message(subject, message_body, access_token, all_members,
                    project_member_ids, base_url)
+
+
+@click.command()
+@click.option('-T', '--access_token', help='Access token', required=True)
+@click.option('-m', '--project_member_id', help='Project Member ID',
+              required=True)
+@click.option('-b', '--file_basename', help='File basename')
+@click.option('-i', '--file_id', help='File ID')
+@click.option('--all_files', help='Delete all files',
+              default=False, show_default=True)
+def delete_cli(access_token, project_member_id, base_url=OH_BASE_URL,
+               file_basename=None, file_id=None, all_files=False):
+    response = delete_file(access_token, project_member_id,
+                           base_url, file_basename, file_id, all_files)
+    if (response.status_code == 200):
+        print("File deleted successfully")
+    else:
+        print("Bad response while deleting file.")

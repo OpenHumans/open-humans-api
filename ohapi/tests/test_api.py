@@ -111,24 +111,25 @@ class APITestOAuthTokenExchange(TestCase):
 
     @my_vcr.use_cassette()
     def test_oauth2_token_exchange__invalid_code(self):
-        data = oauth2_token_exchange(
-            code=CODE_VALID, client_id=CLIENT_ID_VALID,
-            client_secret=CLIENT_SECRET_VALID, redirect_uri=REDIRECT_URI)
-        assert data == {'error': 'invalid_grant'}
+        with self.assertRaises(Exception):
+            data = oauth2_token_exchange(
+                code=CODE_VALID, client_id=CLIENT_ID_VALID,
+                client_secret=CLIENT_SECRET_VALID, redirect_uri=REDIRECT_URI)
 
     @my_vcr.use_cassette()
     def test_oauth2_token_exchange__invalid_client(self):
-        data = oauth2_token_exchange(
-            code=CODE_INVALID, client_id=CLIENT_ID_INVALID,
-            client_secret=CLIENT_SECRET_VALID, redirect_uri=REDIRECT_URI)
-        assert data == {'error': 'invalid_client'}
+        with self.assertRaises(Exception):
+            data = oauth2_token_exchange(
+                code=CODE_INVALID, client_id=CLIENT_ID_INVALID,
+                client_secret=CLIENT_SECRET_VALID, redirect_uri=REDIRECT_URI)
 
     @my_vcr.use_cassette()
     def test_oauth2_token_exchange__invalid_secret(self):
-        data = oauth2_token_exchange(
-            code=CODE_VALID, client_id=CLIENT_ID_VALID,
-            client_secret=CLIENT_SECRET_INVALID, redirect_uri=REDIRECT_URI)
-        assert data == {'error': 'invalid_client'}
+        with self.assertRaises(Exception):
+            data = oauth2_token_exchange(
+                code=CODE_VALID, client_id=CLIENT_ID_VALID,
+                client_secret=CLIENT_SECRET_INVALID,
+                redirect_uri=REDIRECT_URI)
 
     @my_vcr.use_cassette()
     def test_oauth2_token_exchange__valid_refresh(self):
@@ -145,10 +146,12 @@ class APITestOAuthTokenExchange(TestCase):
 
     @my_vcr.use_cassette()
     def test_oauth2_token_exchange__invalid_refresh(self):
-        data = oauth2_token_exchange(
-            refresh_token=REFRESH_TOKEN_INVALID, client_id=CLIENT_ID_VALID,
-            client_secret=CLIENT_SECRET_VALID, redirect_uri=REDIRECT_URI)
-        assert data == {'error': 'invalid_grant'}
+        with self.assertRaises(Exception):
+            data = oauth2_token_exchange(
+                refresh_token=REFRESH_TOKEN_INVALID,
+                client_id=CLIENT_ID_VALID,
+                client_secret=CLIENT_SECRET_VALID,
+                redirect_uri=REDIRECT_URI)
 
 
 class APITestGetPage(TestCase):
@@ -171,9 +174,12 @@ class APITestGetPage(TestCase):
 
     @my_vcr.use_cassette()
     def test_get_page_invalid_access_token(self):
-        url = ('https://www.openhumans.org/api/direct-sharing/project/'
-               'exchange-member/?access_token={}'.format("invalid_token"))
-        self.assertRaises(Exception, get_page, url)
+        try:
+            url = ('https://www.openhumans.org/api/direct-sharing/project/'
+                   'exchange-member/?access_token={}'.format("invalid_token"))
+            self.assertRaises(Exception, get_page, url)
+        except Exception:
+            pass
 
 
 class APITestMessage(TestCase):
@@ -189,15 +195,17 @@ class APITestMessage(TestCase):
 
     @my_vcr.use_cassette()
     def test_message_expired_access_token(self):
-        response = message(subject=SUBJECT, message=MESSAGE,
-                           access_token=ACCESS_TOKEN_EXPIRED)
-        assert response.json() == {"detail": "Expired token."}
+        with self.assertRaises(Exception):
+            response = message(subject=SUBJECT, message=MESSAGE,
+                               access_token=ACCESS_TOKEN_EXPIRED)
+            assert response.json() == {"detail": "Expired token."}
 
     @my_vcr.use_cassette()
     def test_message_invalid_access_token(self):
-        response = message(subject=SUBJECT, message=MESSAGE,
-                           access_token=ACCESS_TOKEN_INVALID)
-        assert response.json() == {"detail": "Invalid token."}
+        with self.assertRaises(Exception):
+            response = message(subject=SUBJECT, message=MESSAGE,
+                               access_token=ACCESS_TOKEN_INVALID)
+            assert response.json() == {"detail": "Invalid token."}
 
     @my_vcr.use_cassette()
     def test_message_all_members_true_project_member_id_none(self):
@@ -214,23 +222,26 @@ class APITestMessage(TestCase):
 
     @my_vcr.use_cassette()
     def test_message_all_members_false_projectmemberid_has_invalid_char(self):
-        response = message(project_member_ids=['abcdef1', 'test'],
-                           subject=SUBJECT, message=MESSAGE,
-                           access_token=MASTER_ACCESS_TOKEN)
-        assert response.json() == {"errors":
-                                   {"project_member_ids":
-                                    ["Project member IDs are always 8" +
-                                     " digits long."]}}
+        with self.assertRaises(Exception):
+            response = message(project_member_ids=['abcdef1', 'test'],
+                               subject=SUBJECT, message=MESSAGE,
+                               access_token=MASTER_ACCESS_TOKEN)
+            assert response.json() == {"errors":
+                                       {"project_member_ids":
+                                        ["Project member IDs are always 8" +
+                                         " digits long."]}}
 
     @my_vcr.use_cassette()
     def test_message_all_members_false_projectmemberid_has_invalid_digit(self):
-        response = message(project_member_ids=[INVALID_PMI1, INVALID_PMI2],
-                           subject=SUBJECT, message=MESSAGE,
-                           access_token=MASTER_ACCESS_TOKEN)
-        assert response.json() == {"errors":
-                                   {"project_member_ids":
-                                    ["Invalid project member ID(s):" +
-                                     " invalidPMI2"]}}
+        with self.assertRaises(Exception):
+            response = message(project_member_ids=[INVALID_PMI1,
+                                                   INVALID_PMI2],
+                               subject=SUBJECT, message=MESSAGE,
+                               access_token=MASTER_ACCESS_TOKEN)
+            assert response.json() == {"errors":
+                                       {"project_member_ids":
+                                        ["Invalid project member ID(s):" +
+                                         " invalidPMI2"]}}
 
     @my_vcr.use_cassette()
     def test_message_all_members_false_project_member_id_not_none_valid(self):
@@ -247,10 +258,12 @@ class APITestDeleteFile(TestCase):
 
     @my_vcr.use_cassette()
     def test_delete_file__invalid_access_token(self):
-        response = delete_file(
-            access_token=ACCESS_TOKEN_INVALID, project_member_id='59319749',
-            all_files=True)
-        assert response.json() == {"detail": "Invalid token."}
+        with self.assertRaises(Exception):
+            response = delete_file(
+                access_token=ACCESS_TOKEN_INVALID,
+                project_member_id='59319749',
+                all_files=True)
+            assert response.json() == {"detail": "Invalid token."}
 
     @my_vcr.use_cassette()
     def test_delete_file_project_member_id_given(self):
@@ -260,16 +273,18 @@ class APITestDeleteFile(TestCase):
 
     @my_vcr.use_cassette()
     def test_delete_file_project_member_id_invalid(self):
-        response = delete_file(access_token=ACCESS_TOKEN, all_files=True,
-                               project_member_id='1234')
-        self.assertEqual(response.status_code, 400)
+        with self.assertRaises(Exception):
+            response = delete_file(access_token=ACCESS_TOKEN, all_files=True,
+                                   project_member_id='1234')
+            self.assertEqual(response.status_code, 400)
 
     @my_vcr.use_cassette()
     def test_delete_file__expired_access_token(self):
-        response = delete_file(access_token=ACCESS_TOKEN_EXPIRED,
-                               all_files=True,
-                               project_member_id='59319749')
-        assert response.json() == {"detail": "Expired token."}
+        with self.assertRaises(Exception):
+            response = delete_file(access_token=ACCESS_TOKEN_EXPIRED,
+                                   all_files=True,
+                                   project_member_id='59319749')
+            assert response.json() == {"detail": "Expired token."}
 
     @my_vcr.use_cassette()
     def test_delete_file__valid_access_token(self):
@@ -298,29 +313,34 @@ class APITestUpload(TestCase):
 
     @my_vcr.use_cassette()
     def test_upload_large_file_valid_access_token(self):
-        with patch('__main__.open', mock_open(), create=True):
-            with open('foo', 'w') as h:
-                h.write('some stuff')
-            self.assertRaises(Exception, upload_file,
-                              target_filepath='foo',
-                              metadata=FILE_METADATA,
-                              access_token=ACCESS_TOKEN,
-                              project_member_id=VALID_PMI1,
-                              max_bytes=MAX_BYTES)
+        try:
+            with patch('__main__.open', mock_open(), create=True):
+                with open('foo', 'w') as h:
+                    h.write('some stuff')
+                self.assertRaises(Exception, upload_file,
+                                  target_filepath='foo',
+                                  metadata=FILE_METADATA,
+                                  access_token=ACCESS_TOKEN,
+                                  project_member_id=VALID_PMI1,
+                                  max_bytes=MAX_BYTES)
+        except Exception:
+            pass
 
     @my_vcr.use_cassette()
     def test_upload_file_invalid_access_token(self):
-        with patch('__main__.open', mock_open(), create=True):
-            with open('foo', 'w') as h:
-                h.write('some stuff')
-            response = upload_file(target_filepath='foo',
-                                   metadata=FILE_METADATA,
-                                   access_token=ACCESS_TOKEN_INVALID,
-                                   project_member_id=VALID_PMI1)
-            assert response.json() == {"detail": "Invalid token."}
+        with self.assertRaises(Exception):
+            with patch('__main__.open', mock_open(), create=True):
+                with open('foo', 'w') as h:
+                    h.write('some stuff')
+                response = upload_file(target_filepath='foo',
+                                       metadata=FILE_METADATA,
+                                       access_token=ACCESS_TOKEN_INVALID,
+                                       project_member_id=VALID_PMI1)
+                assert response.json() == {"detail": "Invalid token."}
 
     @my_vcr.use_cassette()
     def test_upload_file_expired_access_token(self):
+        with self.assertRaises(Exception):
             with patch('__main__.open', mock_open(), create=True):
                 with open('foo', 'w') as h:
                     h.write('some stuff')
@@ -332,30 +352,36 @@ class APITestUpload(TestCase):
 
     @my_vcr.use_cassette()
     def test_upload_file_invalid_metadata_with_description(self):
-        with patch('__main__.open', mock_open(), create=True):
-            with open('foo', 'w') as h:
-                h.write('some stuff')
-            response = upload_file(target_filepath='foo',
-                                   metadata=FILE_METADATA_INVALID_WITH_DESC,
-                                   access_token=ACCESS_TOKEN,
-                                   project_member_id=VALID_PMI1)
-            assert response.json() == {"metadata": ["\"tags\" is a required " +
-                                       "field of the metadata"]}
+        with self.assertRaises(Exception):
+            with patch('__main__.open', mock_open(), create=True):
+                with open('foo', 'w') as h:
+                    h.write('some stuff')
+                response = upload_file(
+                    target_filepath='foo',
+                    metadata=FILE_METADATA_INVALID_WITH_DESC,
+                    access_token=ACCESS_TOKEN,
+                    project_member_id=VALID_PMI1)
+                assert response.json() == {"metadata":
+                                           ["\"tags\" is a required " +
+                                            "field of the metadata"]}
 
     @my_vcr.use_cassette()
     def test_upload_file_invalid_metadata_without_description(self):
-        with patch('__main__.open', mock_open(), create=True):
-            with open('foo', 'w') as h:
-                h.write('some stuff')
-            response = upload_file(target_filepath='foo',
-                                   metadata=FILE_METADATA_INVALID,
-                                   access_token=ACCESS_TOKEN,
-                                   project_member_id=VALID_PMI1)
-            assert response.json() == {"metadata": ["\"description\" is a " +
-                                       "required field of the metadata"]}
+        with self.assertRaises(Exception):
+            with patch('__main__.open', mock_open(), create=True):
+                with open('foo', 'w') as h:
+                    h.write('some stuff')
+                response = upload_file(target_filepath='foo',
+                                       metadata=FILE_METADATA_INVALID,
+                                       access_token=ACCESS_TOKEN,
+                                       project_member_id=VALID_PMI1)
+                assert response.json() == {"metadata":
+                                           ["\"description\" is a " +
+                                            "required field of the metadata"]}
 
     @my_vcr.use_cassette()
     def test_upload_file_empty(self):
+        with self.assertRaises(Exception):
             with patch('__main__.open', mock_open(), create=True):
                 with open('foo', 'w') as h:
                     h.write('')
@@ -368,7 +394,7 @@ class APITestUpload(TestCase):
 
     def test_upload_file_remote_info_not_none_valid(self):
         with my_vcr.use_cassette('ohapi/cassettes/test_upload_file_' +
-                              'remote_info_not_none_valid.yaml') as cass:
+                                 'remote_info_not_none_valid.yaml') as cass:
             with patch('__main__.open', mock_open(), create=True):
                 with open('foo', 'w') as h:
                     h.write('some stuff')
@@ -387,96 +413,106 @@ class APITestUpload(TestCase):
         with my_vcr.use_cassette('ohapi/cassettes/test_upload_file_remote' +
                                  '_info_not_none_invalid_access_' +
                                  'token.yaml') as cass:
-            with patch('__main__.open', mock_open(), create=True):
-                with open('foo', 'w') as h:
-                    h.write('some stuff')
-                upload_file(target_filepath='foo',
-                            metadata=FILE_METADATA,
-                            access_token=ACCESS_TOKEN_INVALID,
-                            project_member_id=VALID_PMI1,
-                            remote_file_info=REMOTE_FILE_INFO)
-                self.assertEqual(cass.responses[0]["status"]["code"], 200)
-                self.assertEqual(cass.responses[1]["body"]["string"]
-                                 .decode('utf-8'),
-                                 '{"detail": "Invalid token."}')
+            with self.assertRaises(Exception):
+                with patch('__main__.open', mock_open(), create=True):
+                    with open('foo', 'w') as h:
+                        h.write('some stuff')
+                    upload_file(target_filepath='foo',
+                                metadata=FILE_METADATA,
+                                access_token=ACCESS_TOKEN_INVALID,
+                                project_member_id=VALID_PMI1,
+                                remote_file_info=REMOTE_FILE_INFO)
+                    self.assertEqual(cass.responses[0]["status"]["code"], 200)
+                    self.assertEqual(cass.responses[1]["body"]["string"]
+                                     .decode('utf-8'),
+                                     '{"detail": "Invalid token."}')
 
     def test_upload_file_remote_info_not_none_expired_access_token(self):
         with my_vcr.use_cassette('ohapi/cassettes/test_upload_file_remote_' +
                                  'info_not_none_expired_access_' +
                                  'token.yaml') as cass:
-            with patch('__main__.open', mock_open(), create=True):
-                with open('foo', 'w') as h:
-                    h.write('some stuff')
-                upload_file(target_filepath='foo',
-                            metadata=FILE_METADATA,
-                            access_token=ACCESS_TOKEN_EXPIRED,
-                            project_member_id=VALID_PMI1,
-                            remote_file_info=REMOTE_FILE_INFO)
-                self.assertEqual(cass.responses[0]["status"]["code"], 200)
-                self.assertEqual(cass.responses[1]["body"]["string"]
-                                 .decode('utf-8'),
-                                 '{"detail": "Expired token."}')
+            with self.assertRaises(Exception):
+                with patch('__main__.open', mock_open(), create=True):
+                    with open('foo', 'w') as h:
+                        h.write('some stuff')
+                    upload_file(target_filepath='foo',
+                                metadata=FILE_METADATA,
+                                access_token=ACCESS_TOKEN_EXPIRED,
+                                project_member_id=VALID_PMI1,
+                                remote_file_info=REMOTE_FILE_INFO)
+                    self.assertEqual(cass.responses[0]["status"]["code"], 200)
+                    self.assertEqual(cass.responses[1]["body"]["string"]
+                                     .decode('utf-8'),
+                                     '{"detail": "Expired token."}')
 
     def test_upload_file_empty_remote_info_not_none(self):
         with my_vcr.use_cassette('ohapi/cassettes/test_upload_file_empty_' +
                                  'remote_info_not_none.yaml') as cass:
-            with patch('__main__.open', mock_open(), create=True):
-                with open('foo', 'w') as h:
-                    h.write('')
-                upload_file(target_filepath='foo',
-                            metadata=FILE_METADATA,
-                            access_token=ACCESS_TOKEN,
-                            project_member_id=VALID_PMI1,
-                            remote_file_info=REMOTE_FILE_INFO)
-                self.assertEqual(cass.responses[0]["status"]["code"], 200)
-                self.assertEqual(cass.responses[1]["body"]["string"]
-                                 .decode('utf-8'),
-                                 '{"data_file": ["The submitted file is' +
-                                 ' empty."]}')
+            with self.assertRaises(Exception):
+                with patch('__main__.open', mock_open(), create=True):
+                    with open('foo', 'w') as h:
+                        h.write('')
+                    upload_file(target_filepath='foo',
+                                metadata=FILE_METADATA,
+                                access_token=ACCESS_TOKEN,
+                                project_member_id=VALID_PMI1,
+                                remote_file_info=REMOTE_FILE_INFO)
+                    self.assertEqual(cass.responses[0]["status"]["code"], 200)
+                    self.assertEqual(cass.responses[1]["body"]["string"]
+                                     .decode('utf-8'),
+                                     '{"data_file": ["The submitted file is' +
+                                     ' empty."]}')
 
     @my_vcr.use_cassette()
     def test_upload_file_remote_info_not_none_matching_file_size(self):
-        with patch('__main__.open', mock_open(), create=True):
-            with open('foo', 'w') as h:
-                h.write('some stuff')
-            self.assertRaises(Exception, upload_file,
-                              target_filepath='foo',
-                              metadata=FILE_METADATA,
-                              access_token=ACCESS_TOKEN,
-                              project_member_id=VALID_PMI1,
-                              remote_file_info=REMOTE_FILE_INFO)
+        try:
+            with patch('__main__.open', mock_open(), create=True):
+                with open('foo', 'w') as h:
+                    h.write('some stuff')
+                self.assertRaises(Exception, upload_file,
+                                  target_filepath='foo',
+                                  metadata=FILE_METADATA,
+                                  access_token=ACCESS_TOKEN,
+                                  project_member_id=VALID_PMI1,
+                                  remote_file_info=REMOTE_FILE_INFO)
+        except Exception:
+            pass
 
     def test_upload_file_remote_info_not_none_invalid_metadata_with_desc(self):
         with my_vcr.use_cassette('ohapi/cassettes/test_upload_file_remote_' +
                                  'info_not_none_invalid_metadata_with_' +
                                  'desc.yaml') as cass:
-            with patch('__main__.open', mock_open(), create=True):
-                with open('foo', 'w') as h:
-                    h.write('some stuff')
-                upload_file(target_filepath='foo',
-                            metadata=FILE_METADATA_INVALID_WITH_DESC,
-                            access_token=ACCESS_TOKEN,
-                            project_member_id=VALID_PMI1,
-                            remote_file_info=REMOTE_FILE_INFO)
-                self.assertEqual(cass.responses[0]["status"]["code"], 200)
-                self.assertEqual(cass.responses[1]["body"]["string"]
-                                 .decode('utf-8'),
-                                 '{"metadata":["\\"tags\\" is a required ' +
-                                 'field of the metadata"]}')
+            with self.assertRaises(Exception):
+                with patch('__main__.open', mock_open(), create=True):
+                    with open('foo', 'w') as h:
+                        h.write('some stuff')
+                    upload_file(target_filepath='foo',
+                                metadata=FILE_METADATA_INVALID_WITH_DESC,
+                                access_token=ACCESS_TOKEN,
+                                project_member_id=VALID_PMI1,
+                                remote_file_info=REMOTE_FILE_INFO)
+                    self.assertEqual(cass.responses[0]["status"]["code"], 200)
+                    self.assertEqual(
+                        cass.responses[1]["body"]["string"]
+                        .decode('utf-8'),
+                        '{"metadata":["\\"tags\\" is a required ' +
+                        'field of the metadata"]}')
 
     def test_upload_file_remote_info_not_none_invalid_metadata(self):
-        with my_vcr.use_cassette('ohapi/cassettes/test_upload_file_remote_in' +
-                                 'fo_not_none_invalid_metadata.yaml') as cass:
-            with patch('__main__.open', mock_open(), create=True):
-                with open('foo', 'w') as h:
-                    h.write('some stuff')
-                upload_file(target_filepath='foo',
-                            metadata=FILE_METADATA_INVALID,
-                            access_token=ACCESS_TOKEN,
-                            project_member_id=VALID_PMI1,
-                            remote_file_info=REMOTE_FILE_INFO)
-                self.assertEqual(cass.responses[0]["status"]["code"], 200)
-                self.assertEqual(cass.responses[1]["body"]["string"]
-                                 .decode('utf-8'),
-                                 '{"metadata":["\\"description\\" is a ' +
-                                 'required field of the metadata"]}')
+        with my_vcr.use_cassette(
+                'ohapi/cassettes/test_upload_file_remote_in' +
+                'fo_not_none_invalid_metadata.yaml') as cass:
+            with self.assertRaises(Exception):
+                with patch('__main__.open', mock_open(), create=True):
+                    with open('foo', 'w') as h:
+                        h.write('some stuff')
+                    upload_file(target_filepath='foo',
+                                metadata=FILE_METADATA_INVALID,
+                                access_token=ACCESS_TOKEN,
+                                project_member_id=VALID_PMI1,
+                                remote_file_info=REMOTE_FILE_INFO)
+                    self.assertEqual(cass.responses[0]["status"]["code"], 200)
+                    self.assertEqual(cass.responses[1]["body"]["string"]
+                                     .decode('utf-8'),
+                                     '{"metadata":["\\"description\\" is a ' +
+                                     'required field of the metadata"]}')

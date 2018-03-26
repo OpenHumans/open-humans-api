@@ -77,6 +77,7 @@ def oauth2_token_exchange(client_id, client_secret, redirect_uri,
     req = requests.post(
         token_url, data=data,
         auth=requests.auth.HTTPBasicAuth(client_id, client_secret))
+    handle_error(req, 200)
     data = req.json()
     return data
 
@@ -86,11 +87,7 @@ def get_page(url):
     Get a single page of results.
     """
     response = requests.get(url)
-    if not response.status_code == 200:
-        err_msg = 'API response status code {}'.format(response.status_code)
-        if 'detail' in response.json():
-            err_msg = err_msg + ": {}".format(response.json()['detail'])
-        raise Exception(err_msg)
+    handle_error(response, 200)
     data = response.json()
     return data
 
@@ -130,9 +127,7 @@ def exchange_oauth2_member(access_token, base_url=OH_BASE_URL):
 def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
                 remote_file_info=None, project_member_id=None,
                 max_bytes=MAX_FILE_DEFAULT):
-    """
-    Upload a file.
-    """
+
     filesize = os.stat(target_filepath).st_size
     if filesize > max_bytes:
         logging.info('Skipping {}, {} > {}'.format(
@@ -140,12 +135,8 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
         raise ValueError("Maximum file size exceeded")
 
     if remote_file_info:
-        response = requests.get(remote_file_info['download_url'], stream=True)
-        remote_size = int(response.headers['Content-Length'])
-        if remote_size == filesize:
-            logging.info('Skipping {}, remote exists with matching name and '
-                         'file size'.format(target_filepath))
-            raise ValueError("Remote exist with matching name and file size")
+        if process_info(remote_file_info, filesize, target_filepath) is False:
+            return
 
     url = urlparse.urljoin(
         base_url, '/api/direct-sharing/project/files/upload/?{}'.format(
@@ -157,12 +148,12 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     if not(project_member_id):
         response = exchange_oauth2_member(access_token)
         project_member_id = response['project_member_id']
-
-    return requests.post(url, files={'data_file': open(target_filepath, 'rb')},
-                         data={'project_member_id': project_member_id,
-                               'metadata': json.dumps(metadata)})
-
+    r = requests.post(url, files={'data_file': open(target_filepath, 'rb')},
+                      data={'project_member_id': project_member_id,
+                            'metadata': json.dumps(metadata)})
+    handle_error(r, 201)
     logging.info('Upload complete: {}'.format(target_filepath))
+    return r
 
 
 def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
@@ -184,8 +175,9 @@ def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
         raise ValueError(
             "One (and only one) of the following must be specified: "
             "file_basename, file_id, or all_files is set to True.")
-    r = requests.post(url, data=data)
-    return r
+    response = requests.post(url, data=data)
+    handle_error(response, 200)
+    return response
 
 
 # Alternate names for the same functions.
@@ -202,15 +194,37 @@ def message(subject, message, access_token, all_members=False,
         base_url, '/api/direct-sharing/project/message/?{}'.format(
             urlparse.urlencode({'access_token': access_token})))
     if not(all_members) and not(project_member_ids):
-        return requests.post(url, data={'subject': subject,
-                                        'message': message})
+        response = requests.post(url, data={'subject': subject,
+                                            'message': message})
+        handle_error(response, 200)
+        return response
     elif all_members and project_member_ids:
         raise ValueError(
             "One (and only one) of the following must be specified: "
             "project_members_id or all_members is set to True.")
     else:
-        return requests.post(url, data={
-                             'all_members': all_members,
-                             'project_member_ids': project_member_ids,
-                             'subject': subject,
-                             'message': message})
+        r = requests.post(url, data={'all_members': all_members,
+                                     'project_member_ids': project_member_ids,
+                                     'subject': subject,
+                                     'message': message})
+        handle_error(r, 200)
+        return r
+
+
+def handle_error(r, expected_code):
+    code = r.status_code
+    if code != expected_code:
+        info = 'API response status code {}'.format(code)
+        if 'detail' in r.json():
+            info = info + ": {}".format(r.json()['detail'])
+        raise Exception(info)
+
+
+def process_info(remote_file_info, filesize, target_filepath):
+    response = requests.get(remote_file_info['download_url'], stream=True)
+    remote_size = int(response.headers['Content-Length'])
+    if remote_size == filesize:
+        logging.info('Skipping {}, remote exists with matching name and '
+                     'file size'.format(target_filepath))
+        return False
+    return True

@@ -217,6 +217,47 @@ Uploading that data with a master access token:
 $ ohproj-upload -T MASTER_ACCESS_TOKEN --metadata-csv member_data_metadata.csv -d member_data
 ```
 
+### ohproj-oauth2-url
+```
+Usage: ohproj-oauth2-url [OPTIONS]
+
+  Get the OAuth2 URL of specified Open Humans Project
+
+  Specifying Redirect URL is optional but client id is required.
+
+Options:
+  -r, --redirect_uri TEXT  Redirect URL of the project
+  -c, --client_id TEXT     Client ID of the project
+```
+
+### ohproj-message
+```
+Usage: ohproj-message [OPTIONS]
+
+  Message the project members of an Open Humans Project
+
+Options:
+  -s, --subject TEXT        Subject of the message
+  -m, --message_body TEXT   Compose message
+  -at, --access_token TEXT  OAuth2 user access token
+  --all_memebers BOOL       Setting this true sends message to all members of the project. By default it is false.
+  --project_member_ids ID   A list of comma separated IDs. Example argument: "ID1, ID2"
+  -v, --verbose             Show INFO level logging. Default value is FALSE
+  --debug                   Show DEBUG level logging. Default value is FALSE
+```
+
+### ohproj-delete
+```
+Usage: ohproj-delete [OPTIONS]
+
+  -T, --access_token TEXT       Access token of the project
+  -m, --project_member_id ID    Project Member ID
+  -b, --file_basename TEXT      File Basename
+  -i, --file_id                 File ID
+  -all_files BOOL               Setting true to all_files deletes all the files in the given project. By default the value is false.
+```
+
+
 #### Setting up documentation locally
 
 Navigate to the docs folder.

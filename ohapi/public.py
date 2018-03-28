@@ -35,6 +35,12 @@ def signal_handler_cb(signal_name, frame):
 def download_url(result, directory, max_bytes):
     """
     Download a file.
+
+    :param result: This field contains a url from which data will be
+        downloaded.
+    :param directory: This field is the target directory to which data will be
+        downloaded.
+    :param max_bytes: This field is the maximum file size in bytes.
     """
     response = requests.get(result['download_url'], stream=True)
 
@@ -103,6 +109,9 @@ def download_url(result, directory, max_bytes):
 @click.option('--debug', help='Report DEBUG level logging to stdout.',
               is_flag=True)
 def download_cli(source, username, directory, max_size, quiet, debug):
+    """
+    Command line tools for :func:`download<ohapi.public.download>`
+    """
     return download(source, username, directory, max_size, quiet, debug)
 
 
@@ -110,6 +119,19 @@ def download(source=None, username=None, directory='.', max_size='128m',
              quiet=None, debug=None):
     """
     Download public data from Open Humans.
+
+    :param source: This field is the data source from which to download. It's
+        default value is None.
+    :param username: This fiels is username of user. It's default value is
+        None.
+    :param directory: This field is the target directory to which data is
+        downloaded.
+    :param max_size: This field is the maximum file size. It's default value is
+        128m.
+    :param quiet: This field is the logging level. It's default value is
+        None.
+    :param debug: This field is the logging level. It's default value is
+        None.
     """
     if debug:
         logging.basicConfig(level=logging.DEBUG)

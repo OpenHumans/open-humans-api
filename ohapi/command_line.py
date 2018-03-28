@@ -18,8 +18,13 @@ from .utils_fs import load_metadata_csv, mk_metadata_csv, read_id_list
 
 MAX_FILE_DEFAULT = parse_size('128m')
 
-
 def set_log_level(debug, verbose):
+    """
+    Sets the logging level.
+
+    :param debug: This boolean field is the logging level.
+    :param verbose: This boolean field is the logging level.
+    """
     if debug:
         logging.basicConfig(level=logging.DEBUG)
     elif verbose:
@@ -47,6 +52,11 @@ def download_cli(directory, master_token=None, member=None, access_token=None,
                  source=None, project_data=False, max_size='128m',
                  verbose=False, debug=False, memberlist=None,
                  excludelist=None):
+    """
+    Command line function for downloading data from project members to the
+    target directory. For more information visit
+    :func:`download<ohapi.command_line.download>`.
+    """
     return download(directory, master_token, member, access_token, source,
                     project_data, max_size, verbose, debug, memberlist,
                     excludelist)
@@ -67,6 +77,27 @@ def download(directory, master_token=None, member=None, access_token=None,
     If project_data is True (or the "--project-data" flag is used), this data
     (the project's own data files, instead of data from other sources) will be
     downloaded for each member.
+
+    :param directory: This field is the target directory to download data.
+    :param master_token: This field is the master access token for the project.
+        It's default value is None.
+    :param member: This field is specific member whose project data is
+        downloaded. It's default value is None.
+    :param access_token: This field is the user specific access token. It's
+        default value is None.
+    :param source: This field is the data source. It's default value is None.
+    :param project_data: This field is data related to particular project. It's
+        default value is False.
+    :param max_size: This field is the maximum file size. It's default value is
+        128m.
+    :param verbose: This boolean field is the logging level. It's default value
+        is False.
+    :param debug: This boolean field is the logging level. It's default value
+        is False.
+    :param memberlist: This field is list of members whose data will be
+        downloaded. It's default value is None.
+    :param excludelist: This field is list of members whose data will be
+        skipped. It's default value is None.
     """
     set_log_level(debug, verbose)
 
@@ -125,12 +156,25 @@ def download(directory, master_token=None, member=None, access_token=None,
               required=True)
 def download_metadata_cli(master_token, output_csv, verbose=False,
                           debug=False):
+    """
+    Command line function for downloading metadata.
+    For more information visit
+    :func:`download_metadata<ohapi.command_line.download_metadata>`.
+    """
     return download_metadata(master_token, output_csv, verbose, debug)
 
 
 def download_metadata(master_token, output_csv, verbose=False, debug=False):
     """
     Output CSV with metadata for a project's downloadable files in Open Humans.
+
+    :param master_token: This field is the master access token for the project.
+    :param output_csv: This field is the target csv file to which metadata is
+        written.
+    :param verbose: This boolean field is the logging level. It's default value
+        is False.
+    :param debug: This boolean field is the logging level. It's default value
+        is False.
     """
     set_log_level(debug, verbose)
 
@@ -162,6 +206,11 @@ def download_metadata(master_token, output_csv, verbose=False, debug=False):
 @click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
 def upload_metadata_cli(directory, create_csv='', create_json='', review='',
                         max_size='128m', verbose=False, debug=False):
+    """
+    Command line function for drafting or reviewing metadata files.
+    For more information visit
+    :func:`upload_metadata<ohapi.command_line.upload_metadata>`.
+    """
     return upload_metadata(directory, create_csv, create_json, review,
                            max_size, verbose, debug)
 
@@ -170,9 +219,19 @@ def upload_metadata(directory, create_csv='', create_json='', review='',
                     max_size='128m', verbose=False, debug=False):
     """
     Draft or review metadata files for uploading files to Open Humans.
-
     The target directory should either represent files for a single member (no
     subdirectories), or contain a subdirectory for each project member ID.
+
+    :param directory: This field is the directory for which metadata has to be
+        created.
+    :param create_csv: This field is the output filepath to which csv file
+        will be written.
+    :param max_size: This field is the maximum file size. It's default value is
+        None.
+    :param verbose: This boolean field is the logging level. It's default value
+        is False.
+    :param debug: This boolean field is the logging level. It's default value
+        is False.
     """
     set_log_level(debug, verbose)
 
@@ -203,6 +262,11 @@ def upload_metadata(directory, create_csv='', create_json='', review='',
 def upload_cli(directory, metadata_csv, master_token=None, member=None,
                access_token=None, safe=False, sync=False, max_size='128m',
                mode='default', verbose=False, debug=False):
+    """
+    Command line function for uploading files to OH.
+    For more information visit
+    :func:`upload<ohapi.command_line.upload>`.
+    """
     return upload(directory, metadata_csv, master_token, member,
                   access_token, safe, sync, max_size,
                   mode, verbose, debug)
@@ -219,19 +283,16 @@ def upload(directory, metadata_csv, master_token=None, member=None,
     (1) Files should be organized in subdirectories according to project
     member ID, e.g.:
 
-    \b
         main_directory/01234567/data.json
         main_directory/12345678/data.json
         main_directory/23456789/data.json
 
     (2) The metadata CSV should have the following format:
 
-    \b
         1st column: Project member ID
         2nd column: filenames
         3rd & additional columns: Metadata fields (see below)
 
-    \b
     If uploading for a specific member:
     (1) The local directory should not contain subdirectories.
     (2) The metadata CSV should have the following format:
@@ -242,13 +303,35 @@ def upload(directory, metadata_csv, master_token=None, member=None,
     Open Humans, but not otherwise delete files. (Use --safe or --sync to
     change this behavior.)
 
-    \b
     If included, the following metadata columns should be correctly formatted:
     'tags': should be comma-separated strings
     'md5': should match the file's md5 hexdigest
     'creation_date', 'start_date', 'end_date': ISO 8601 dates or datetimes
 
     Other metedata fields (e.g. 'description') can be arbitrary strings.
+    Either specify sync as True or safe as True but not both.
+
+    :param directory: This field is the target directory from which data will
+        be uploaded.
+    :param metadata_csv: This field is the filepath of the metadata csv file.
+    :param master_token: This field is the master access token for the project.
+        It's default value is None.
+    :param member: This field is specific member whose project data is
+        downloaded. It's default value is None.
+    :param access_token: This field is the user specific access token. It's
+        default value is None.
+    :param safe: This boolean field will overwrite matching filename. It's
+        default value is False.
+    :param sync: This boolean field will delete files on Open Humans that are
+        not in the local directory. It's default value is False.
+    :param max_size: This field is the maximum file size. It's default value is
+        None.
+    :param mode: This field takes three value default, sync, safe. It's default
+        value is 'default'.
+    :param verbose: This boolean field is the logging level. It's default value
+        is False.
+    :param debug: This boolean field is the logging level. It's default value
+        is False.
     """
     if safe and sync:
         raise UsageError('Safe (--safe) and sync (--sync) modes are mutually '
@@ -316,6 +399,11 @@ def upload(directory, metadata_csv, master_token=None, member=None,
 @click.option('--base_url', help='Base URL', default=OH_BASE_URL)
 def oauth2_auth_url_cli(redirect_uri=None, client_id=None,
                         base_url=OH_BASE_URL):
+    """
+    Command line function for obtaining the Oauth2 url.
+    For more information visit
+    :func:`oauth2_auth_url<ohapi.api.oauth2_auth_url>`.
+"""
     result = oauth2_auth_url(redirect_uri, client_id, base_url)
     print('The requested URL is : \r')
     print(result)
@@ -336,6 +424,12 @@ def oauth2_auth_url_cli(redirect_uri=None, client_id=None,
 def message_cli(subject, message_body, access_token, all_members=False,
                 project_member_ids=None, base_url=OH_BASE_URL,
                 verbose=False, debug=False):
+    """
+    Command line function for sending email to a single user or in bulk.
+    For more information visit
+    :func:`message<ohapi.api.message>`.
+
+    """
     if project_member_ids:
         project_member_ids = re.split(r'[ ,\r\n]+', project_member_ids)
     return message(subject, message_body, access_token, all_members,
@@ -352,6 +446,11 @@ def message_cli(subject, message_body, access_token, all_members=False,
               default=False, show_default=True)
 def delete_cli(access_token, project_member_id, base_url=OH_BASE_URL,
                file_basename=None, file_id=None, all_files=False):
+    """
+    Command line function for deleting files.
+    For more information visit
+    :func:`delete_file<ohapi.api.delete_file>`.
+    """
     response = delete_file(access_token, project_member_id,
                            base_url, file_basename, file_id, all_files)
     if (response.status_code == 200):

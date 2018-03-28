@@ -8,3 +8,4 @@ requests
 click
 mock
 sphinx
+sphinx-click

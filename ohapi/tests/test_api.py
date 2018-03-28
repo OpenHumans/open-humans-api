@@ -74,6 +74,9 @@ my_vcr = vcr.VCR(path_transformer=vcr.VCR.ensure_suffix('.yaml'),
 
 
 class APITestOAuthTokenExchange(TestCase):
+    """
+    Tests for :func:`oauth2_auth_url<ohapi.api.oauth2_auth_url>`.
+    """
 
     def setUp(self):
         pass
@@ -155,6 +158,9 @@ class APITestOAuthTokenExchange(TestCase):
 
 
 class APITestGetPage(TestCase):
+    """
+    Tests for :func:`get_page<ohapi.api.get_page>`.
+    """
 
     def setUp(self):
         pass
@@ -183,6 +189,9 @@ class APITestGetPage(TestCase):
 
 
 class APITestMessage(TestCase):
+    """
+    Tests for :func:`message<ohapi.api.message>`.
+    """
 
     def setUp(self):
         pass
@@ -252,6 +261,9 @@ class APITestMessage(TestCase):
 
 
 class APITestDeleteFile(TestCase):
+    """
+    Tests for :func:`delete_file<ohapi.api.delete_file>`.
+    """
 
     def setUp(self):
         pass
@@ -295,6 +307,9 @@ class APITestDeleteFile(TestCase):
 
 
 class APITestUpload(TestCase):
+    """
+    Tests for :func:`upload_file<ohapi.api.upload_file>`.
+    """
 
     def setUp(self):
         pass

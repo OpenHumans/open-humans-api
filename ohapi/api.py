@@ -13,9 +13,6 @@ import requests
 
 MAX_FILE_DEFAULT = parse_size('128m')
 OH_BASE_URL = os.getenv('OHAPI_OH_BASE_URL', 'https://www.openhumans.org/')
-OH_API_BASE = OH_BASE_URL + '/api/direct-sharing'
-OH_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
-OH_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
 
 
 class SettingsError(Exception):
@@ -330,24 +327,31 @@ def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
                remote_file_info=None, project_member_id=None,
                max_bytes=MAX_FILE_DEFAULT):
     if remote_file_info:
+        filesize = os.stat(target_filepath).st_size
         if process_info(remote_file_info, filesize, target_filepath) is False:
             return
 
-    url = '{}?{}'.format(OH_UPLOAD, urlparse.urlencode(
-        {'access_token': access_token}))
+    url = urlparse.urljoin(
+        base_url,
+        '/api/direct-sharing/project/files/upload/direct/?{}'.format(
+            urlparse.urlencode({'access_token': access_token})))
 
     if not(project_member_id):
         response = exchange_oauth2_member(access_token)
         project_member_id = response['project_member_id']
 
     r = requests.post(url, data={'project_member_id': project_member_id,
-                                 'metadata': json.dumps(metadata)})
+                                 'metadata': json.dumps(metadata),
+                                 'filename': target_filepath})
     requests.put(url=r.json()['url'],
                  data={'data_file': open(target_filepath, 'rb')})
-    done = '{}?{}'.format(OH_UPLOAD_COMPLETE,
-                          urlparse.urlencode({'access_token': access_token}))
+    done = urlparse.urljoin(
+        base_url,
+        '/api/direct-sharing/project/files/upload/complete/?{}'.format(
+            urlparse.urlencode({'access_token': access_token})))
+
     r1 = requests.post(done, data={'project_member_id': project_member_id,
                                    'file_id': r.json()['id']})
-    handle_error(r1, 201)
+    handle_error(r1, 200)
     logging.info('Upload complete: {}'.format(target_filepath))
-    return r
+    return r1

@@ -340,11 +340,13 @@ def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
         response = exchange_oauth2_member(access_token)
         project_member_id = response['project_member_id']
 
+    filename = target_filepath.split("/")[-1]
+
     r = requests.post(url, data={'project_member_id': project_member_id,
                                  'metadata': json.dumps(metadata),
-                                 'filename': target_filepath})
+                                 'filename': filename})
     requests.put(url=r.json()['url'],
-                 data={'data_file': open(target_filepath, 'rb')})
+                 data=open(target_filepath, 'rb'))
     done = urlparse.urljoin(
         base_url,
         '/api/direct-sharing/project/files/upload/complete/?{}'.format(

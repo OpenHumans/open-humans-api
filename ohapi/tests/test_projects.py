@@ -53,11 +53,19 @@ class ProjectsTest(TestCase):
         pass
 
     def test_get_member_file_data_member_data_none(self):
+        """
+        Test for :func:`_get_member_file_data<ohapi.projects._get_member_file_data>`
+
+        """
         response = OHProject._get_member_file_data(member_data=MEMBER_DATA)
         self.assertEqual(response, {1: {'basename': 1}})
 
 
 class ProjectsTestUpdateData(TestCase):
+    """
+    Tests for :func:`update_data<ohapi.projects._update_data>`
+
+    """
 
     def setUp(self):
         pass

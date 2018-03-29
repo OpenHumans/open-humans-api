@@ -15,35 +15,27 @@ ohapi.api module
 ohapi.command\_line module
 --------------------------
 .. click:: ohapi.command_line:download_cli
-    :prog: download_cli
+    :prog: ohproj-download
 
 .. click:: ohapi.command_line:download_metadata_cli
-    :prog: download_metadata_cli
+    :prog: ohproj-download-metadata
 
 .. click:: ohapi.command_line:upload_metadata_cli
-    :prog: upload_metadata_cli
+    :prog: ohproj-upload-metadata
 
 .. click:: ohapi.command_line:upload_cli
-    :prog: upload_cli
+    :prog: ohproj-upload
 
 .. click:: ohapi.command_line:oauth2_auth_url_cli
-    :prog: oauth2_auth_url_cli
+    :prog: ohproj-oauth2-url
 
 .. click:: ohapi.command_line:message_cli
-    :prog: message_cli
+    :prog: ohproj-message
 
 .. click:: ohapi.command_line:delete_cli
-    :prog: delete_cli
+    :prog: ohproj-delete
 
 .. automodule:: ohapi.command_line
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-ohapi.projects module
----------------------
-
-.. automodule:: ohapi.projects
     :members:
     :undoc-members:
     :show-inheritance:
@@ -57,7 +49,15 @@ ohapi.public module
     :show-inheritance:
 
 .. click:: ohapi.public:download_cli
-    :prog: download_cli
+    :prog: ohpub-download
+
+ohapi.projects module
+---------------------
+
+.. automodule:: ohapi.projects
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 ohapi.utils\_fs module
 ----------------------
@@ -85,7 +85,7 @@ ohapi.tests.test_api module
 
 
 ohapi.tests.test_projects module
------------------------------
+--------------------------------
 
 .. automodule:: ohapi.tests.test_projects
     :exclude-members: parameter_defaults, setUp

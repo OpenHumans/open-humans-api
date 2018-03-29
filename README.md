@@ -1,5 +1,7 @@
 # open-humans-api
 [![Build Status](https://travis-ci.org/OpenHumans/open-humans-api.svg?branch=master)](https://travis-ci.org/OpenHumans/open-humans-api) [![Maintainability](https://api.codeclimate.com/v1/badges/f44ae877944131bf59c2/maintainability)](https://codeclimate.com/github/OpenHumans/open-humans-api/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/f44ae877944131bf59c2/test_coverage)](https://codeclimate.com/github/OpenHumans/open-humans-api/test_coverage)
+[![Documentation Status](https://readthedocs.org/projects/open-humans-api/badge/?version=latest)](http://open-humans-api.readthedocs.io/en/latest/?badge=latest)
+
 
 
 This package aims to provide some tools to facilitate working with the Open

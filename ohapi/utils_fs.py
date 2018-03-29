@@ -17,6 +17,11 @@ MAX_FILE_DEFAULT = parse_size('128m')
 
 
 def strip_zip_suffix(filename):
+    """
+    Helper function to strip suffix from filename.
+
+    :param filename: This field is the name of file.
+    """
     if filename.endswith('.gz'):
         return filename[:-3]
     elif filename.endswith('.bz2'):
@@ -26,6 +31,11 @@ def strip_zip_suffix(filename):
 
 
 def guess_tags(filename):
+    """
+    Function to get potential tags for files using the file names.
+
+    :param filename: This field is the name of file.
+    """
     tags = []
     stripped_filename = strip_zip_suffix(filename)
     if stripped_filename.endswith('.vcf'):
@@ -42,6 +52,10 @@ def characterize_local_files(filedir, max_bytes=MAX_FILE_DEFAULT):
     Collate local file info as preperation for Open Humans upload.
 
     Note: Files with filesize > max_bytes are not included in returned info.
+
+    :param filedir: This field is target directory to get files from.
+    :param max_bytes: This field is the maximum file size to consider. Its
+        default value is 128m.
     """
     file_data = {}
     logging.info('Characterizing files in {}'.format(filedir))
@@ -68,6 +82,10 @@ def characterize_local_files(filedir, max_bytes=MAX_FILE_DEFAULT):
 def validate_metadata(target_dir, metadata):
     """
     Check that the files listed in metadata exactly match files in target dir.
+
+    :param target_dir: This field is the target directory from which to
+        match metadata
+    :param metadata: This field contains the metadata to be matched.
     """
     file_list = os.listdir(target_dir)
     for filename in file_list:
@@ -82,6 +100,11 @@ def validate_metadata(target_dir, metadata):
 def load_metadata_csv_single_user(csv_in, header, tags_idx):
     """
     Return the metadata as requested for a single user.
+
+    :param csv_in: This field is the csv file to return metadata from.
+    :param header: This field contains the headers in the csv file
+    :param tags_idx: This field contains the index of the tags in the csv
+        file.
     """
     metadata = {}
     for row in csv_in:
@@ -99,7 +122,12 @@ def load_metadata_csv_single_user(csv_in, header, tags_idx):
 
 def load_metadata_csv_multi_user(csv_in, header, tags_idx):
     """
-    Return the metadata as requested for a single user.
+    Return the metadata as requested for multiple users.
+
+    :param csv_in: This field is the csv file to return metadata from.
+    :param header: This field contains the headers in the csv file
+    :param tags_idx: This field contains the index of the tags in the csv
+        file.
     """
     metadata = {}
     for row in csv_in:
@@ -123,6 +151,8 @@ def load_metadata_csv(input_filepath):
 
     Format is either dict (filenames are keys) or dict-of-dicts (project member
     IDs as top level keys, then filenames as keys).
+
+    :param input_filepath: This field is the filepath of the csv file.
     """
     with open(input_filepath) as f:
         csv_in = csv.reader(f)
@@ -139,6 +169,15 @@ def load_metadata_csv(input_filepath):
 
 
 def mk_metadata_csv(filedir, outputfilepath, max_bytes=MAX_FILE_DEFAULT):
+    """
+    Make metadata file for all files in a directory.
+
+    :param filedir: This field is the filepath of the directory whose csv
+        has to be made.
+    :param outputfilepath: This field is the file path of the output csv.
+    :param max_bytes: This field is the maximum file size to consider. Its
+        default value is 128m.
+    """
     with open(outputfilepath, 'w') as outputfile:
         csv_out = csv.writer(outputfile)
         subdirs = [os.path.join(filedir, i) for i in os.listdir(filedir) if
@@ -183,6 +222,13 @@ def mk_metadata_csv(filedir, outputfilepath, max_bytes=MAX_FILE_DEFAULT):
 def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
     """
     Download a file.
+
+    :param download_url: This field is the url from which data will be
+        downloaded.
+    :param target_filepath: This field is the path of the file where
+        data will be downloaded.
+    :param max_bytes: This field is the maximum file size to download. Its
+        default value is 128m.
     """
     response = requests.get(download_url, stream=True)
     size = int(response.headers['Content-Length'])
@@ -214,6 +260,11 @@ def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
 
 
 def read_id_list(filepath):
+    """
+    Get project member id from a file.
+
+    :param filepath: This field is the path of file to read.
+    """
     if not filepath:
         return None
     id_list = []

@@ -64,10 +64,17 @@ def test_test():
 
 class UtilsTest(TestCase):
 
+    """
+    Tests for :func:`utils_fs<ohapi.utils_fs>`
+    """
     def setUp(self):
         pass
 
     def test_guess_tags(self):
+        """
+        Tests for :func:`guess_tags<ohapi.utils_fs.guess_tags>`
+
+        """
         fname = "foo.vcf"
         self.assertEqual(guess_tags(fname), ['vcf'])
         fname = "foo.json.gz"
@@ -76,6 +83,10 @@ class UtilsTest(TestCase):
         self.assertEqual(guess_tags(fname), ['csv'])
 
     def test_load_metadata_csv(self):
+        """
+        Tests for :func:`load_metadata_csv<ohapi.utils_fs.load_metadata_csv>`
+
+        """
         metadata_users = load_metadata_csv('ohapi/tests/data/'
                                            'metadata_proj_member_key.csv')
         self.assertEqual(len(metadata_users.keys()), 2)
@@ -87,15 +98,27 @@ class UtilsTest(TestCase):
         self.assertEqual(len(metadata_files.keys()), 2)
 
     def test_validate_metadata(self):
+        """
+        Tests for :func:`validate_metadata<ohapi.utils_fs.validate_metadata>`
+
+        """
         directory = 'ohapi/tests/data/test_directory/'
         metadata = {'file_1.json', 'file_2.json'}
         self.assertEqual(validate_metadata(directory, metadata), True)
 
     def test_read_id_list_filepath_not_given(self):
+        """
+        Tests for :func:`read_id_list<ohapi.utils_fs.read_id_list>`
+
+        """
         response = read_id_list(filepath=None)
         self.assertEqual(response, None)
 
     def test_read_id_list_filepath_given(self):
+        """
+        Tests for :func:`read_id_list<ohapi.utils_fs.read_id_list>`
+
+        """
         filename = 'sample.txt'
         filedir = 'ohapi/tests/data/test_id_dir/'
         FILEPATH = os.path.join(filedir, filename)
@@ -104,6 +127,10 @@ class UtilsTest(TestCase):
 
     @my_vcr.use_cassette()
     def test_download_file_valid_url(self):
+        """
+        Tests for :func:`download_file<ohapi.utils_fs.download_file>`
+
+        """
         with patch('ohapi.utils_fs.open', mock_open(), create=True):
             FILEPATH = 'ohapi/tests/data/test_download_dir/test_download_file'
             DOWNLOAD_URL = 'http://www.loremipsum.de/downloads/version1.txt'

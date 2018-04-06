@@ -204,18 +204,18 @@ def download_metadata(master_token, output_csv, verbose=False, debug=False):
               default='128m', show_default=True)
 @click.option('-v', '--verbose', help='Show INFO level logging', is_flag=True)
 @click.option('--debug', help='Show DEBUG level logging.', is_flag=True)
-def upload_metadata_cli(directory, create_csv='', create_json='', review='',
+def upload_metadata_cli(directory, create_csv='', review='',
                         max_size='128m', verbose=False, debug=False):
     """
     Command line function for drafting or reviewing metadata files.
     For more information visit
     :func:`upload_metadata<ohapi.command_line.upload_metadata>`.
     """
-    return upload_metadata(directory, create_csv, create_json, review,
+    return upload_metadata(directory, create_csv, review,
                            max_size, verbose, debug)
 
 
-def upload_metadata(directory, create_csv='', create_json='', review='',
+def upload_metadata(directory, create_csv='', review='',
                     max_size='128m', verbose=False, debug=False):
     """
     Draft or review metadata files for uploading files to Open Humans.

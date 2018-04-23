@@ -48,7 +48,7 @@ Options:
 ```
 # download all 23andMe files to 23andme/
 $ mkdir 23andme
-$ ohpub-download --source twenty_three_and_me --directory 23andme
+$ ohpub-download --source direct-sharing-128 --directory 23andme
 # download all of beau's files to the current directory
 $ ohpub-download --username beau
 ```

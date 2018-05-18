@@ -26,6 +26,9 @@ ohapi.command\_line module
 .. click:: ohapi.command_line:upload_cli
     :prog: ohproj-upload
 
+.. click:: ohapi.command_line:oauth_token_exchange_cli
+    :prog: ohproj-oauth2-token-exchange
+
 .. click:: ohapi.command_line:oauth2_auth_url_cli
     :prog: ohproj-oauth2-url
 

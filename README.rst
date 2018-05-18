@@ -145,7 +145,7 @@ Draft metadata file:
 
 ::
 
-    $ ohproj-metadata -d member_data --create-csv member_data_metadata.csv
+    $ ohproj-upload-metadata -d member_data --create-csv member_data_metadata.csv
 
 Initially it looks like this:
 

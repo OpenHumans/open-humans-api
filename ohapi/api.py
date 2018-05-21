@@ -326,6 +326,24 @@ def handle_error(r, expected_code):
 def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
                remote_file_info=None, project_member_id=None,
                max_bytes=MAX_FILE_DEFAULT):
+    """
+    Upload a file to AWS. To learn more about Open Humans OAuth2 projects, go
+    to: https://www.openhumans.org/direct-sharing/oauth2-features/.
+
+    :param target_filepath: This field is the filepath of the file to be
+        uploaded
+    :param metadata: This field is a python dictionary with keys filename,
+        description and tags for single user upload and filename,
+        project member id, description and tags for multiple user upload.
+    :param access_token: This is user specific access token/master token.
+    :param base_url: It is this URL `https://www.openhumans.org`.
+    :param remote_file_info: This field is for for checking if a file with
+        matching name and file size already exists. Its default value is none.
+    :param project_member_id: This field is the list of project member id of
+        all members of a project. Its default value is None.
+    :param max_bytes: This field is the maximum file size a user can upload.
+        It's default value is 128m.
+    """
     if remote_file_info:
         filesize = os.stat(target_filepath).st_size
         if process_info(remote_file_info, filesize, target_filepath) is False:

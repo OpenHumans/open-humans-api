@@ -1,0 +1,29 @@
+interactions:
+- request:
+    body: project_member_id=VALID_PMI1&metadata=%7B%22description%22%3A+%22Test+data%22%7D&filename=foo
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['97']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/direct/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"metadata":["\"tags\" is a required field of the metadata"]}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['no-store, max-age=0, must-revalidate, no-cache']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Sun, 27 May 2018 12:37:27 GMT']
+      Expires: ['Sun, 27 May 2018 12:37:27 GMT']
+      Last-Modified: ['Sun, 27 May 2018 12:37:27 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 400, message: Bad Request}
+version: 1

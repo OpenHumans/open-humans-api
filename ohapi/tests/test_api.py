@@ -8,7 +8,7 @@ from posix import stat_result
 
 from ohapi.api import (
     SettingsError, oauth2_auth_url, oauth2_token_exchange,
-    get_page, message, delete_file, upload_file)
+    get_page, message, delete_file, upload_file, upload_aws)
 
 parameter_defaults = {
     'CLIENT_ID_VALID': 'validclientid',
@@ -587,3 +587,91 @@ class APITestUpload(TestCase):
                         .decode('utf-8'),
                         '{"metadata":["\\"description\\" is a ' +
                         'required field of the metadata"]}')
+
+
+class APITestUploadAws(TestCase):
+    """
+    Tests for :func:`upload_aws<ohapi.api.upload_aws>`.
+    """
+
+    def setUp(self):
+        pass
+
+    @my_vcr.use_cassette()
+    def test_upload_aws_invalid_access_token(self):
+        with self.assertRaises(Exception):
+            response = upload_aws(
+                target_filepath='foo',
+                metadata=FILE_METADATA,
+                access_token=ACCESS_TOKEN_INVALID,
+                project_member_id=VALID_PMI1)
+            assert response.json() == {"detail": "Invalid token."}
+
+    @my_vcr.use_cassette()
+    def test_upload_aws_expired_access_token(self):
+        with self.assertRaises(Exception):
+            with patch('ohapi.api.open', mock_open(), create=True):
+                response = upload_aws(
+                    target_filepath='foo',
+                    metadata=FILE_METADATA,
+                    access_token=ACCESS_TOKEN_EXPIRED,
+                    project_member_id=VALID_PMI1)
+                assert response.json() == {"detail": "Expired token."}
+
+    @my_vcr.use_cassette()
+    def test_upload_aws_invalid_metadata_with_description(self):
+        with self.assertRaises(Exception):
+            with patch('ohapi.api.open', mock_open(), create=True):
+                response = upload_aws(
+                    target_filepath='foo',
+                    metadata=FILE_METADATA_INVALID_WITH_DESC,
+                    access_token=ACCESS_TOKEN,
+                    project_member_id=VALID_PMI1)
+                assert response.json() == {
+                    "metadata":
+                    ["\"tags\" is a required " +
+                     "field of the metadata"]}
+
+    @my_vcr.use_cassette()
+    def test_upload_aws_invalid_metadata_without_description(self):
+        with self.assertRaises(Exception):
+            with patch('ohapi.api.open', mock_open(), create=True):
+                response = upload_aws(
+                    target_filepath='foo',
+                    metadata=FILE_METADATA_INVALID_WITHOUT_DESC,
+                    access_token=ACCESS_TOKEN,
+                    project_member_id=VALID_PMI1)
+                assert response.json() == {
+                    "metadata":
+                    ["\"description\" is a " +
+                     "required field of the metadata"]}
+
+    def test_upload_aws_valid_access_token(self):
+        with my_vcr.use_cassette('ohapi/cassettes/test_upload_aws_valid_' +
+                                 'access_token') as cass:
+            with patch('ohapi.api.open', mock_open(read_data=b'some stuff')):
+                try:
+
+                    def fake_stat(arg):
+                        if arg == "foo":
+                            faked = list(orig_os_stat('/tmp'))
+                            faked[stat.ST_SIZE] = len('some stuff')
+                            return stat_result(faked)
+                        else:
+                            return orig_os_stat(arg)
+                    orig_os_stat = os.stat
+                    os.stat = fake_stat
+                    upload_aws(target_filepath='foo',
+                               metadata=FILE_METADATA,
+                               access_token=ACCESS_TOKEN,
+                               project_member_id=VALID_PMI1
+                               )
+                    self.assertEqual(cass.responses[0][
+                                     "status"]["code"], 201)
+                    self.assertEqual(cass.responses[1][
+                                     "status"]["code"], 200)
+                    self.assertEqual(cass.responses[2][
+                                     "status"]["code"], 200)
+                finally:
+                    os.stat = orig_os_stat
+                    pass

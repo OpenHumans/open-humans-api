@@ -1,0 +1,30 @@
+interactions:
+- request:
+    body: metadata=%7B%22description%22%3A+%22Test+data%22%2C+%22tags%22%3A+%5B%22text%22%5D%7D&project_member_id=validPMI1&filename=foo
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['131']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/direct/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"detail": "Invalid token."}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['no-store, max-age=0, must-revalidate, no-cache']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Sun, 27 May 2018 12:31:10 GMT']
+      Expires: ['Sun, 27 May 2018 12:31:11 GMT']
+      Last-Modified: ['Sun, 27 May 2018 12:31:11 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      Www-Authenticate: [Bearer realm="api"]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 401, message: Unauthorized}
+version: 1

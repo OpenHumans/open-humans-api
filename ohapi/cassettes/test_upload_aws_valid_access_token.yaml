@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: project_member_id=VALID_PMI1&filename=foo&metadata=%7B%22description%22%3A+%22Test+data%22%2C+%22tags%22%3A+%5B%22text%22%5D%7D
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['131']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/direct/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"id":62525,"url":"https://open-humans-production.s3.amazonaws.com/member-files/direct-sharing-91/9e66a62e-61a8-11e8-b07f-0adfe9ac8c63/data1.csv?Signature=hpTZ1tI2qNR%2BjKsHpMAZQ7rDNOk%3D&Expires=1527445347&AWSAccessKeyId=AKIAIKNTFUJJTNS6N7HA"}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['no-store, max-age=0, must-revalidate, no-cache']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Sun, 27 May 2018 12:22:27 GMT']
+      Expires: ['Sun, 27 May 2018 12:22:27 GMT']
+      Last-Modified: ['Sun, 27 May 2018 12:22:27 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 201, message: Created}
+- request:
+    body: !!python/object/new:_io.BytesIO
+      state: !!python/tuple
+      - !!binary |
+        ZmlsZW5hbWUJdGFncwlkZXNjcmlwdGlvbgltZDUJY3JlYXRpb25fZGF0ZQ0KMgkxCTEJMQkyDQoz
+        CTEJMQkyCTENCjQJMQkxCTIJMg0KNQkxCTIJMQkxDQo2CTEJMgkxCTINCjcJMQkyCTIJMQ0KOAkx
+        CTIJMgkyDQo5CTIJMQkxCTENCjEwCTIJMQkxCTINCjExCTIJMQkyCTENCjEyCTIJMQkyCTINCjEz
+        CTIJMgkxCTENCjI0CTMJMgkyCTINCg==
+      - 0
+      - null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['193']
+      User-Agent: [python-requests/2.9.1]
+    method: PUT
+    uri: https://open-humans-production.s3.amazonaws.com/member-files/direct-sharing-91/9e66a62e-61a8-11e8-b07f-0adfe9ac8c63/data1.csv?AWSAccessKeyId=AKIAIKNTFUJJTNS6N7HA&Expires=1527445347&Signature=hpTZ1tI2qNR%2BjKsHpMAZQ7rDNOk%3D
+  response:
+    body: {string: ''}
+    headers:
+      Content-Length: ['0']
+      Date: ['Sun, 27 May 2018 12:22:30 GMT']
+      ETag: ['"a001239b1fc73e870624f30a1bbcfaa5"']
+      Server: [AmazonS3]
+      x-amz-id-2: [AGsm/0GOPc3UL+r4kSqUdMrQ7HQUbsg1CKpdPGuQb5OZJVRfEePau1Sys3Fzb5sExchR+Zcz+dA=]
+      x-amz-request-id: [6A87A532B72F8C2C]
+      x-amz-version-id: [EUF6e13CrmKQmirroBg1i0Jbyai7TZYq]
+    status: {code: 200, message: OK}
+- request:
+    body: file_id=62525&project_member_id=40110289
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['40']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.9.1]
+    method: POST
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/complete/?access_token=ACCESSTOKEN
+  response:
+    body: {string: '{"status":"ok","size":193}'}
+    headers:
+      Allow: ['POST, OPTIONS']
+      Cache-Control: ['must-revalidate, max-age=0, no-cache, no-store']
+      Connection: [close]
+      Content-Language: [en]
+      Content-Type: [application/json]
+      Date: ['Sun, 27 May 2018 12:22:31 GMT']
+      Expires: ['Sun, 27 May 2018 12:22:31 GMT']
+      Last-Modified: ['Sun, 27 May 2018 12:22:31 GMT']
+      Server: [Cowboy]
+      Vary: ['Accept, Accept-Language, Cookie']
+      Via: [1.1 vegur]
+      X-Frame-Options: [SAMEORIGIN]
+    status: {code: 200, message: OK}
+version: 1

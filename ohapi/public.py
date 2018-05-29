@@ -53,7 +53,7 @@ def download_url(result, directory, max_bytes):
 
     if size > max_bytes:
         logging.info('Skipping {}, {} > {}'.format(filename, format_size(size),
-                                            format_size(max_bytes)))
+                                                   format_size(max_bytes)))
 
         return
 
@@ -95,24 +95,6 @@ def download_url(result, directory, max_bytes):
         print("\n")
 
     logging.info('Downloaded {}'.format(filename))
-
-
-@click.command()
-@click.option('-s', '--source', help='the source to download files from')
-@click.option('-u', '--username', help='the user to download files from')
-@click.option('-d', '--directory', help='the directory for downloaded files',
-              default='.')
-@click.option('-m', '--max-size', help='the maximum file size to download',
-              default='128m')
-@click.option('-q', '--quiet', help='Report ERROR level logging to stdout',
-              is_flag=True)
-@click.option('--debug', help='Report DEBUG level logging to stdout.',
-              is_flag=True)
-def download_cli(source, username, directory, max_size, quiet, debug):
-    """
-    Command line tools for :func:`download<ohapi.public.download>`
-    """
-    return download(source, username, directory, max_size, quiet, debug)
 
 
 def download(source=None, username=None, directory='.', max_size='128m',

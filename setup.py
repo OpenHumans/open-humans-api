@@ -54,7 +54,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'ohpub-download = ohapi.public:download_cli',
+            'ohpub-download = ohapi.command_line:public_data_download_cli',
             'ohproj-download = ohapi.command_line:download_cli',
             'ohproj-download-metadata = ohapi.command_line:download_metadata_cli',
             'ohproj-upload = ohapi.command_line:upload_cli',

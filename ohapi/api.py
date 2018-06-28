@@ -174,7 +174,8 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
         return
 
     if remote_file_info:
-        if process_info(remote_file_info, filesize, target_filepath) is False:
+        if _remote_file_check(
+                remote_file_info, filesize, target_filepath) is False:
             return
 
     url = urlparse.urljoin(
@@ -279,7 +280,6 @@ def message(subject, message, access_token, all_members=False,
         return r
 
 
-
 def exceeds_size(filesize, max_bytes, target_filepath):
     """
     Helper function to check if the given file exceeds the maximum file size limit.
@@ -291,7 +291,7 @@ def exceeds_size(filesize, max_bytes, target_filepath):
     return False
 
 
-def process_info(remote_file_info, filesize, target_filepath):
+def _remote_file_check(remote_file_info, filesize, file_identifier):
     """
     Helper function for checking if a file with matching name and file_size
     exists.
@@ -299,14 +299,13 @@ def process_info(remote_file_info, filesize, target_filepath):
     :param remote_file_info: This field is for for checking if a file with
         matching name and file size already exists.
     :param filesize: This field is the size of file.
-    :param target_filepath: This field is the filepath of the file to be
-        checked.
+    :param file_identifier: Text string identifying the file to be checked.
     """
     response = requests.get(remote_file_info['download_url'], stream=True)
     remote_size = int(response.headers['Content-Length'])
     if remote_size == filesize:
         logging.info('Skipping {}, remote exists with matching name and '
-                     'file size'.format(target_filepath))
+                     'file size'.format(file_identifier))
         return False
     return True
 
@@ -351,7 +350,8 @@ def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     """
     if remote_file_info:
         filesize = os.stat(target_filepath).st_size
-        if process_info(remote_file_info, filesize, target_filepath) is False:
+        if _remote_file_check(
+                remote_file_info, filesize, target_filepath) is False:
             return
 
     url = urlparse.urljoin(

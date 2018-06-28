@@ -170,10 +170,8 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
         It's default value is 128m.
     """
     filesize = os.stat(target_filepath).st_size
-    if filesize > max_bytes:
-        logging.info('Skipping {}, {} > {}'.format(
-            target_filepath, format_size(filesize), format_size(max_bytes)))
-        raise ValueError("Maximum file size exceeded")
+    if exceeds_size(filesize, max_bytes, target_filepath) is True:
+        return
 
     if remote_file_info:
         if process_info(remote_file_info, filesize, target_filepath) is False:
@@ -279,6 +277,9 @@ def message(subject, message, access_token, all_members=False,
 
 
 def exceeds_size(filesize, max_bytes, target_filepath):
+    """
+    Helper function to check if the given file exceeds the maximum file size limit.
+    """
     if filesize > max_bytes:
         logging.info('Skipping {}, {} > {}'.format(
             target_filepath, format_size(filesize), format_size(max_bytes)))

@@ -195,7 +195,7 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     return r
 
 
-def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
+def delete_file(access_token, project_member_id=None, base_url=OH_BASE_URL,
                 file_basename=None, file_id=None, all_files=False):
     """
     Delete project member files by file_basename, file_id, or all_files. To
@@ -203,7 +203,8 @@ def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
         https://www.openhumans.org/direct-sharing/oauth2-features/.
 
     :param access_token: This field is user specific access_token.
-    :param project_member_id: This field is the project member id of user.
+    :param project_member_id: This field is the project member id of user. It's
+        default value is None.
     :param base_url: It is this URL `https://www.openhumans.org`.
     :param file_basename: This field is the name of the file to delete for the
         particular user for the particular project.
@@ -215,6 +216,9 @@ def delete_file(access_token, project_member_id, base_url=OH_BASE_URL,
     url = urlparse.urljoin(
         base_url, '/api/direct-sharing/project/files/delete/?{}'.format(
             urlparse.urlencode({'access_token': access_token})))
+    if not(project_member_id):
+        response = exchange_oauth2_member(access_token)
+        project_member_id = response['project_member_id']
     data = {'project_member_id': project_member_id}
     if file_basename and not (file_id or all_files):
         data['file_basename'] = file_basename

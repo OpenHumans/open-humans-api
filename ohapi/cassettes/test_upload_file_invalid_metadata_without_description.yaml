@@ -1,30 +1,26 @@
 interactions:
 - request:
-    body: "--2a35161bb23c4b1ebb3d2e5a4dceb8ca\r\nContent-Disposition: form-data; name=\"\
-      project_member_id\"\r\n\r\n40110289\r\n--2a35161bb23c4b1ebb3d2e5a4dceb8ca\r\n\
-      Content-Disposition: form-data; name=\"metadata\"\r\n\r\n{}\r\n--2a35161bb23c4b1ebb3d2e5a4dceb8ca\r\
-      \nContent-Disposition: form-data; name=\"data_file\"; filename=\"foo\"\r\n\r\
-      \nsome stuff\r\n--2a35161bb23c4b1ebb3d2e5a4dceb8ca--\r\n"
+    body: project_member_id=PROJECTMEMBERID&metadata=%7B%7D&filename=lorem_ipsum.txt
     headers:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
-      Content-Length: ['351']
-      Content-Type: [multipart/form-data; boundary=2a35161bb23c4b1ebb3d2e5a4dceb8ca]
-      User-Agent: [python-requests/2.9.1]
+      Content-Length: ['67']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/?access_token=ACCESSTOKEN
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/direct/?access_token=ACCESSTOKEN
   response:
     body: {string: '{"metadata":["\"description\" is a required field of the metadata"]}'}
     headers:
       Allow: ['POST, OPTIONS']
-      Cache-Control: ['max-age=0, no-cache, no-store, must-revalidate']
+      Cache-Control: ['max-age=0, must-revalidate, no-cache, no-store']
       Connection: [close]
       Content-Language: [en]
       Content-Type: [application/json]
-      Date: ['Fri, 16 Mar 2018 14:18:26 GMT']
-      Expires: ['Fri, 16 Mar 2018 14:18:26 GMT']
-      Last-Modified: ['Fri, 16 Mar 2018 14:18:26 GMT']
+      Date: ['Mon, 02 Jul 2018 23:02:15 GMT']
+      Expires: ['Mon, 02 Jul 2018 23:02:15 GMT']
+      Last-Modified: ['Mon, 02 Jul 2018 23:02:15 GMT']
       Server: [Cowboy]
       Vary: ['Accept, Accept-Language, Cookie']
       Via: [1.1 vegur]

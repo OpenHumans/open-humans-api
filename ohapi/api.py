@@ -149,53 +149,6 @@ def exchange_oauth2_member(access_token, base_url=OH_BASE_URL):
     return member_data
 
 
-def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
-                remote_file_info=None, project_member_id=None,
-                max_bytes=MAX_FILE_DEFAULT):
-    """
-    Upload a file.To learn more about Open Humans OAuth2 projects, go to:
-    https://www.openhumans.org/direct-sharing/oauth2-features/.
-
-    :param target_filepath: This field is the filepath of the file to be
-        uploaded
-    :param metadata: This field is the metadata associated with the file.
-        Description and tags are compulsory fields of metadata.
-    :param access_token: This is user specific access token/master token.
-    :param base_url: It is this URL `https://www.openhumans.org`.
-    :param remote_file_info: This field is for for checking if a file with
-        matching name and file size already exists. Its default value is none.
-    :param project_member_id: This field is the list of project member id of
-        all members of a project. Its default value is None.
-    :param max_bytes: This field is the maximum file size a user can upload.
-        It's default value is 128m.
-    """
-    filesize = os.stat(target_filepath).st_size
-    if exceeds_size(filesize, max_bytes, target_filepath) is True:
-        return
-
-    if remote_file_info:
-        if _remote_file_check(
-                remote_file_info, filesize, target_filepath) is False:
-            return
-
-    url = urlparse.urljoin(
-        base_url, '/api/direct-sharing/project/files/upload/?{}'.format(
-            urlparse.urlencode({'access_token': access_token})))
-
-    logging.info('Uploading {} ({})'.format(
-        target_filepath, format_size(filesize)))
-
-    if not(project_member_id):
-        response = exchange_oauth2_member(access_token)
-        project_member_id = response['project_member_id']
-    r = requests.post(url, files={'data_file': open(target_filepath, 'rb')},
-                      data={'project_member_id': project_member_id,
-                            'metadata': json.dumps(metadata)})
-    handle_error(r, 201)
-    logging.info('Upload complete: {}'.format(target_filepath))
-    return r
-
-
 def delete_file(access_token, project_member_id=None, base_url=OH_BASE_URL,
                 file_basename=None, file_id=None, all_files=False):
     """
@@ -280,34 +233,12 @@ def message(subject, message, access_token, all_members=False,
         return r
 
 
-def exceeds_size(filesize, max_bytes, target_filepath):
-    """
-    Helper function to check if the given file exceeds the maximum file size limit.
-    """
-    if filesize > max_bytes:
+def _exceeds_size(filesize, max_bytes, file_identifier):
+    if int(filesize) > max_bytes:
         logging.info('Skipping {}, {} > {}'.format(
-            target_filepath, format_size(filesize), format_size(max_bytes)))
+            file_identifier, format_size(filesize), format_size(max_bytes)))
         return True
     return False
-
-
-def _remote_file_check(remote_file_info, filesize, file_identifier):
-    """
-    Helper function for checking if a file with matching name and file_size
-    exists.
-
-    :param remote_file_info: This field is for for checking if a file with
-        matching name and file size already exists.
-    :param filesize: This field is the size of file.
-    :param file_identifier: Text string identifying the file to be checked.
-    """
-    response = requests.get(remote_file_info['download_url'], stream=True)
-    remote_size = int(response.headers['Content-Length'])
-    if remote_size == filesize:
-        logging.info('Skipping {}, remote exists with matching name and '
-                     'file size'.format(file_identifier))
-        return False
-    return True
 
 
 def handle_error(r, expected_code):
@@ -324,15 +255,96 @@ def handle_error(r, expected_code):
         info = 'API response status code {}'.format(code)
         if 'detail' in r.json():
             info = info + ": {}".format(r.json()['detail'])
+        elif 'metadata' in r.json():
+            info = info + ": {}".format(r.json()['metadata'])
         raise Exception(info)
 
 
-def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
-               remote_file_info=None, project_member_id=None,
-               max_bytes=MAX_FILE_DEFAULT):
+def upload_stream(stream, filename, metadata, access_token,
+                  base_url=OH_BASE_URL, remote_file_info=None,
+                  project_member_id=None, max_bytes=MAX_FILE_DEFAULT,
+                  file_identifier=None):
     """
-    Upload a file to AWS. To learn more about Open Humans OAuth2 projects, go
-    to: https://www.openhumans.org/direct-sharing/oauth2-features/.
+    Upload a file object using the "direct upload" feature, which uploads to
+    an S3 bucket URL provided by the Open Humans API. To learn more about this
+    API endpoint see:
+      * https://www.openhumans.org/direct-sharing/on-site-data-upload/
+      * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
+
+    :param stream: This field is the stream (or file object) to be
+        uploaded.
+    :param metadata: This field is the metadata associated with the file.
+        Description and tags are compulsory fields of metadata.
+    :param access_token: This is user specific access token/master token.
+    :param base_url: It is this URL `https://www.openhumans.org`.
+    :param remote_file_info: This field is for for checking if a file with
+        matching name and file size already exists. Its default value is none.
+    :param project_member_id: This field is the list of project member id of
+        all members of a project. Its default value is None.
+    :param max_bytes: This field is the maximum file size a user can upload.
+        Its default value is 128m.
+    :param max_bytes: If provided, this is used in logging output. Its default
+        value is None (in which case, filename is used).
+    """
+    if not file_identifier:
+        file_identifier = filename
+
+    # Determine a stream's size using seek.
+    # f is a file-like object.
+    old_position = stream.tell()
+    stream.seek(0, os.SEEK_END)
+    filesize = stream.tell()
+    stream.seek(old_position, os.SEEK_SET)
+    if filesize == 0:
+        raise Exception('The submitted file is empty.')
+
+    # Check size, and possibly remote file match.
+    if _exceeds_size(filesize, max_bytes, file_identifier):
+        raise ValueError("Maximum file size exceeded")
+    if remote_file_info:
+        response = requests.get(remote_file_info['download_url'], stream=True)
+        remote_size = int(response.headers['Content-Length'])
+        if remote_size == filesize:
+            info_msg = ('Skipping {}, remote exists with matching '
+                        'file size'.format(file_identifier))
+            logging.info(info_msg)
+            return(info_msg)
+
+    url = urlparse.urljoin(
+        base_url,
+        '/api/direct-sharing/project/files/upload/direct/?{}'.format(
+            urlparse.urlencode({'access_token': access_token})))
+
+    if not(project_member_id):
+        response = exchange_oauth2_member(access_token)
+        project_member_id = response['project_member_id']
+
+    data = {'project_member_id': project_member_id,
+            'metadata': json.dumps(metadata),
+            'filename': filename}
+    r1 = requests.post(url, data=data)
+    handle_error(r1, 201)
+    requests.put(url=r1.json()['url'], data=stream)
+    done = urlparse.urljoin(
+        base_url,
+        '/api/direct-sharing/project/files/upload/complete/?{}'.format(
+            urlparse.urlencode({'access_token': access_token})))
+
+    r2 = requests.post(done, data={'project_member_id': project_member_id,
+                                   'file_id': r1.json()['id']})
+    handle_error(r2, 200)
+    logging.info('Upload complete: {}'.format(file_identifier))
+    return r2
+
+
+def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
+                remote_file_info=None, project_member_id=None,
+                max_bytes=MAX_FILE_DEFAULT):
+    """
+    Upload a file from a local filepath using the "direct upload" API.
+    To learn more about this API endpoint see:
+      * https://www.openhumans.org/direct-sharing/on-site-data-upload/
+      * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
 
     :param target_filepath: This field is the filepath of the file to be
         uploaded
@@ -348,35 +360,38 @@ def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     :param max_bytes: This field is the maximum file size a user can upload.
         It's default value is 128m.
     """
-    if remote_file_info:
-        filesize = os.stat(target_filepath).st_size
-        if _remote_file_check(
-                remote_file_info, filesize, target_filepath) is False:
-            return
+    stream = open(target_filepath, 'rb')
+    slurp = stream.readlines()
+    print(slurp)
+    stream.close()
+    stream = open(target_filepath, 'rb')
+    filename = target_filepath.split('/')[-1]
+    return upload_stream(
+        stream, filename, metadata, access_token, base_url, remote_file_info,
+        project_member_id, max_bytes, file_identifier=target_filepath)
 
-    url = urlparse.urljoin(
-        base_url,
-        '/api/direct-sharing/project/files/upload/direct/?{}'.format(
-            urlparse.urlencode({'access_token': access_token})))
 
-    if not(project_member_id):
-        response = exchange_oauth2_member(access_token)
-        project_member_id = response['project_member_id']
+def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
+               remote_file_info=None, project_member_id=None,
+               max_bytes=MAX_FILE_DEFAULT):
+    """
+    Upload a file from a local filepath using the "direct upload" API.
+    Equivalent to upload_file. To learn more about this API endpoint see:
+      * https://www.openhumans.org/direct-sharing/on-site-data-upload/
+      * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
 
-    filename = target_filepath.split("/")[-1]
-
-    r = requests.post(url, data={'project_member_id': project_member_id,
-                                 'metadata': json.dumps(metadata),
-                                 'filename': filename})
-    requests.put(url=r.json()['url'],
-                 data=open(target_filepath, 'rb'))
-    done = urlparse.urljoin(
-        base_url,
-        '/api/direct-sharing/project/files/upload/complete/?{}'.format(
-            urlparse.urlencode({'access_token': access_token})))
-
-    r1 = requests.post(done, data={'project_member_id': project_member_id,
-                                   'file_id': r.json()['id']})
-    handle_error(r1, 200)
-    logging.info('Upload complete: {}'.format(target_filepath))
-    return r1
+    :param target_filepath: This field is the filepath of the file to be
+        uploaded
+    :param metadata: This field is the metadata associated with the file.
+        Description and tags are compulsory fields of metadata.
+    :param access_token: This is user specific access token/master token.
+    :param base_url: It is this URL `https://www.openhumans.org`.
+    :param remote_file_info: This field is for for checking if a file with
+        matching name and file size already exists. Its default value is none.
+    :param project_member_id: This field is the list of project member id of
+        all members of a project. Its default value is None.
+    :param max_bytes: This field is the maximum file size a user can upload.
+        It's default value is 128m.
+    """
+    return upload_file(target_filepath, metadata, access_token, base_url,
+                       remote_file_info, project_member_id, max_bytes)

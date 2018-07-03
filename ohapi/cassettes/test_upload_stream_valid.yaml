@@ -11,16 +11,16 @@ interactions:
     method: POST
     uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/direct/?access_token=ACCESSTOKEN
   response:
-    body: {string: '{"id":82289,"url":"https://open-humans-production.s3.amazonaws.com/member-files/direct-sharing-39/b1025250-7e4b-11e8-9e37-62c08ca290cf/lorem_ipsum.txt?Signature=F7vG8ZEvdqEpG0c8G%2FNttUr4zOs%3D&Expires=1530594019&AWSAccessKeyId=AKIAIKNTFUJJTNS6N7HA"}'}
+    body: {string: '{"id":82295,"url":"https://open-humans-production.s3.amazonaws.com/member-files/direct-sharing-39/c6aa66f2-7e7c-11e8-8bfb-62c08ca290cf/lorem_ipsum.txt?Signature=%2F%2BPBbor7ML%2BknwLMUeSecbVnnKc%3D&Expires=1530615100&AWSAccessKeyId=AKIAIKNTFUJJTNS6N7HA"}'}
     headers:
       Allow: ['POST, OPTIONS']
       Cache-Control: ['no-store, no-cache, max-age=0, must-revalidate']
       Connection: [close]
       Content-Language: [en]
       Content-Type: [application/json]
-      Date: ['Mon, 02 Jul 2018 23:00:18 GMT']
-      Expires: ['Mon, 02 Jul 2018 23:00:19 GMT']
-      Last-Modified: ['Mon, 02 Jul 2018 23:00:19 GMT']
+      Date: ['Tue, 03 Jul 2018 04:51:40 GMT']
+      Expires: ['Tue, 03 Jul 2018 04:51:40 GMT']
+      Last-Modified: ['Tue, 03 Jul 2018 04:51:40 GMT']
       Server: [Cowboy]
       Vary: ['Accept, Accept-Language, Cookie']
       Via: [1.1 vegur]
@@ -47,17 +47,17 @@ interactions:
       Content-Length: ['446']
       User-Agent: [python-requests/2.18.4]
     method: PUT
-    uri: https://open-humans-production.s3.amazonaws.com/member-files/direct-sharing-39/b1025250-7e4b-11e8-9e37-62c08ca290cf/lorem_ipsum.txt?AWSAccessKeyId=AKIAIKNTFUJJTNS6N7HA&Expires=1530594019&Signature=F7vG8ZEvdqEpG0c8G%2FNttUr4zOs%3D
+    uri: https://open-humans-production.s3.amazonaws.com/member-files/direct-sharing-39/c6aa66f2-7e7c-11e8-8bfb-62c08ca290cf/lorem_ipsum.txt?AWSAccessKeyId=AKIAIKNTFUJJTNS6N7HA&Expires=1530615100&Signature=%2F%2BPBbor7ML%2BknwLMUeSecbVnnKc%3D
   response:
     body: {string: ''}
     headers:
       Content-Length: ['0']
-      Date: ['Mon, 02 Jul 2018 23:00:20 GMT']
+      Date: ['Tue, 03 Jul 2018 04:51:42 GMT']
       ETag: ['"cefd9dacdc23ee1faabb1e954d281274"']
       Server: [AmazonS3]
-      x-amz-id-2: [exxbMlQa6HoaRoiHzo2ei0tTuLPxHgcdY2Vm6GFIlinAHseIdLPL3MUbQ7u0KF2oP3jxOlO0X0c=]
-      x-amz-request-id: [E00052228845C084]
-      x-amz-version-id: [rG7EIMjWf.yG6vpWewzaMqzTKfU66ds4]
+      x-amz-id-2: [Q8u5ylHxSY6bNuLZkijyb9TYXP3Dji12VWRhZCZXc9QCLoyNaMvhrOOpx3caWlcdEsGdqo5fC6w=]
+      x-amz-request-id: [DC809771BB568515]
+      x-amz-version-id: [fBMyyoO8_Zp4oEKW2u0ZuSswJEfmgp0w]
     status: {code: 200, message: OK}
 - request:
     body: project_member_id=PROJECTMEMBERID&file_id=FILEID
@@ -71,16 +71,16 @@ interactions:
     method: POST
     uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/complete/?access_token=ACCESSTOKEN
   response:
-    body: {string: '{"size":446,"status":"ok"}'}
+    body: {string: '{"status":"ok","size":446}'}
     headers:
       Allow: ['POST, OPTIONS']
-      Cache-Control: ['no-store, no-cache, max-age=0, must-revalidate']
+      Cache-Control: ['max-age=0, must-revalidate, no-cache, no-store']
       Connection: [close]
       Content-Language: [en]
       Content-Type: [application/json]
-      Date: ['Mon, 02 Jul 2018 23:00:19 GMT']
-      Expires: ['Mon, 02 Jul 2018 23:00:20 GMT']
-      Last-Modified: ['Mon, 02 Jul 2018 23:00:20 GMT']
+      Date: ['Tue, 03 Jul 2018 04:51:42 GMT']
+      Expires: ['Tue, 03 Jul 2018 04:51:42 GMT']
+      Last-Modified: ['Tue, 03 Jul 2018 04:51:42 GMT']
       Server: [Cowboy]
       Vary: ['Accept, Accept-Language, Cookie']
       Via: [1.1 vegur]

@@ -9,7 +9,7 @@ import re
 
 import arrow
 from humanfriendly import format_size, parse_size
-from .api import exceeds_size
+from .api import _exceeds_size
 import requests
 
 
@@ -480,7 +480,7 @@ def download_file(download_url, target_filepath, max_bytes=MAX_FILE_DEFAULT):
     response = requests.get(download_url, stream=True)
     size = int(response.headers['Content-Length'])
 
-    if exceeds_size(size, max_bytes, target_filepath) is True:
+    if _exceeds_size(size, max_bytes, target_filepath) is True:
         return response
 
     logging.info('Downloading {} ({})'.format(

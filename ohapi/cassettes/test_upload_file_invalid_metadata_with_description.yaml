@@ -1,20 +1,15 @@
 interactions:
 - request:
-    body: "--23f1ed0fc09c4e7288b0fd36951cab9a\r\nContent-Disposition: form-data; name=\"\
-      metadata\"\r\n\r\n{\"description\": \"test_file\"}\r\n--23f1ed0fc09c4e7288b0fd36951cab9a\r\
-      \nContent-Disposition: form-data; name=\"project_member_id\"\r\n\r\n40110289\r\
-      \n--23f1ed0fc09c4e7288b0fd36951cab9a\r\nContent-Disposition: form-data; name=\"\
-      data_file\"; filename=\"foo\"\r\n\r\nsome stuff\r\n--23f1ed0fc09c4e7288b0fd36951cab9a--\r\
-      \n"
+    body: project_member_id=PROJECTMEMBERID&metadata=%7B%22description%22%3A+%22Lorem+ipsum+text%22%7D&filename=lorem_ipsum.txt
     headers:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
-      Content-Length: ['377']
-      Content-Type: [multipart/form-data; boundary=23f1ed0fc09c4e7288b0fd36951cab9a]
-      User-Agent: [python-requests/2.9.1]
+      Content-Length: ['110']
+      Content-Type: [application/x-www-form-urlencoded]
+      User-Agent: [python-requests/2.18.4]
     method: POST
-    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/?access_token=ACCESSTOKEN
+    uri: https://www.openhumans.org/api/direct-sharing/project/files/upload/direct/?access_token=ACCESSTOKEN
   response:
     body: {string: '{"metadata":["\"tags\" is a required field of the metadata"]}'}
     headers:
@@ -23,9 +18,9 @@ interactions:
       Connection: [close]
       Content-Language: [en]
       Content-Type: [application/json]
-      Date: ['Fri, 16 Mar 2018 14:25:53 GMT']
-      Expires: ['Fri, 16 Mar 2018 14:25:53 GMT']
-      Last-Modified: ['Fri, 16 Mar 2018 14:25:53 GMT']
+      Date: ['Mon, 02 Jul 2018 23:01:47 GMT']
+      Expires: ['Mon, 02 Jul 2018 23:01:47 GMT']
+      Last-Modified: ['Mon, 02 Jul 2018 23:01:47 GMT']
       Server: [Cowboy]
       Vary: ['Accept, Accept-Language, Cookie']
       Via: [1.1 vegur]

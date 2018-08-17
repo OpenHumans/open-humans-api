@@ -360,15 +360,11 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     :param max_bytes: This field is the maximum file size a user can upload.
         It's default value is 128m.
     """
-    stream = open(target_filepath, 'rb')
-    slurp = stream.readlines()
-    print(slurp)
-    stream.close()
-    stream = open(target_filepath, 'rb')
-    filename = target_filepath.split('/')[-1]
-    return upload_stream(
-        stream, filename, metadata, access_token, base_url, remote_file_info,
-        project_member_id, max_bytes, file_identifier=target_filepath)
+    with open(target_filepath, 'rb') as stream:
+        filename = os.path.basename(target_filepath)
+        return upload_stream(stream, filename, metadata, access_token,
+                             base_url, remote_file_info, project_member_id,
+                             max_bytes, file_identifier=target_filepath)
 
 
 def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,

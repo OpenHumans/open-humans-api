@@ -101,6 +101,18 @@ With this we can now perform the actual upload like this:
 
 This will upload the data from the ``member_data`` directory along with the metadata specified in ``member_data_metadata.csv``.
 
+Using OAuth2 ``access_token``s
+---------------------------------------------------
+The CLI tools also accept the usage of OAuth2 ``access_token``s instead of an ``master_access_token``.
+This enables you to use the CLI tools in your own OAuth2 applications if you're not using Python for your development.
+
+Here is an example to download all the data shared by a single member through the command line:
+
+.. code-block:: shell
+
+  ohproj-download -t personal_access_token -m '12345678' --directory download_directory
+
+
 List of commands and their parameters
 =====================================
 

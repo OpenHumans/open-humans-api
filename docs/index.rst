@@ -18,8 +18,8 @@ set of command line utilities that can be used to
   * for a given Project
   * for a given Member
 
-* Upload files for a project through a ``master_access_token``
-* Download files for a project through a ``master_access_token``
+* Upload files for a project through a ``master_access_token`` or OAuth2 ``access_token``
+* Download files for a project through a ``master_access_token`` or OAuth2 ``access_token``
 
 .. toctree::
    :maxdepth: 2

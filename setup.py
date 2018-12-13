@@ -29,7 +29,7 @@ setup(
     description='Tools for working with Open Humans APIs',
     long_description=readme(),
 
-    version='0.2.4',
+    version='0.2.5',
 
     license='MIT',
 

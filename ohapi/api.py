@@ -1,3 +1,8 @@
+"""
+Utility functions to use the OAuth2 project API to e.g. message users, download
+their files, upload new ones and delete existing files.
+"""
+
 from collections import OrderedDict
 import json
 import logging
@@ -271,8 +276,8 @@ def upload_stream(stream, filename, metadata, access_token,
     Upload a file object using the "direct upload" feature, which uploads to
     an S3 bucket URL provided by the Open Humans API. To learn more about this
     API endpoint see:
-      * https://www.openhumans.org/direct-sharing/on-site-data-upload/
-      * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
+    * https://www.openhumans.org/direct-sharing/on-site-data-upload/
+    * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
 
     :param stream: This field is the stream (or file object) to be
         uploaded.
@@ -347,8 +352,8 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     """
     Upload a file from a local filepath using the "direct upload" API.
     To learn more about this API endpoint see:
-      * https://www.openhumans.org/direct-sharing/on-site-data-upload/
-      * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
+    * https://www.openhumans.org/direct-sharing/on-site-data-upload/
+    * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
 
     :param target_filepath: This field is the filepath of the file to be
         uploaded
@@ -377,8 +382,8 @@ def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     """
     Upload a file from a local filepath using the "direct upload" API.
     Equivalent to upload_file. To learn more about this API endpoint see:
-      * https://www.openhumans.org/direct-sharing/on-site-data-upload/
-      * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
+    * https://www.openhumans.org/direct-sharing/on-site-data-upload/
+    * https://www.openhumans.org/direct-sharing/oauth2-data-upload/
 
     :param target_filepath: This field is the filepath of the file to be
         uploaded

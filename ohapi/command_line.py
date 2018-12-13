@@ -509,6 +509,6 @@ def delete_cli(access_token, project_member_id, base_url=OH_BASE_URL,
 def public_data_download_cli(source, username, directory, max_size, quiet,
                              debug):
     """
-    Command line tools for :func:`download<ohapi.public.download>`
+    Command line tools for downloading public data.
     """
     return public_download(source, username, directory, max_size, quiet, debug)

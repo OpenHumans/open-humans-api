@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+"""
+Utility functions to download public data files.
+"""
 import logging
 import os
 import re

@@ -176,7 +176,7 @@ def delete_file(access_token, project_member_id=None, base_url=OH_BASE_URL,
         base_url, '/api/direct-sharing/project/files/delete/?{}'.format(
             urlparse.urlencode({'access_token': access_token})))
     if not(project_member_id):
-        response = exchange_oauth2_member(access_token)
+        response = exchange_oauth2_member(access_token, base_url=base_url)
         project_member_id = response['project_member_id']
     data = {'project_member_id': project_member_id}
     if file_basename and not (file_id or all_files):
@@ -258,10 +258,13 @@ def handle_error(r, expected_code):
     code = r.status_code
     if code != expected_code:
         info = 'API response status code {}'.format(code)
-        if 'detail' in r.json():
-            info = info + ": {}".format(r.json()['detail'])
-        elif 'metadata' in r.json():
-            info = info + ": {}".format(r.json()['metadata'])
+        try:
+            if 'detail' in r.json():
+                info = info + ": {}".format(r.json()['detail'])
+            elif 'metadata' in r.json():
+                info = info + ": {}".format(r.json()['metadata'])
+        except json.decoder.JSONDecodeError:
+            info = info + ":\n{}".format(r.content)
         raise Exception(info)
 
 
@@ -321,7 +324,7 @@ def upload_stream(stream, filename, metadata, access_token,
             urlparse.urlencode({'access_token': access_token})))
 
     if not(project_member_id):
-        response = exchange_oauth2_member(access_token)
+        response = exchange_oauth2_member(access_token, base_url=base_url)
         project_member_id = response['project_member_id']
 
     data = {'project_member_id': project_member_id,
@@ -329,17 +332,18 @@ def upload_stream(stream, filename, metadata, access_token,
             'filename': filename}
     r1 = requests.post(url, data=data)
     handle_error(r1, 201)
-    requests.put(url=r1.json()['url'], data=stream)
+    r2 = requests.put(url=r1.json()['url'], data=stream)
+    handle_error(r2, 200)
     done = urlparse.urljoin(
         base_url,
         '/api/direct-sharing/project/files/upload/complete/?{}'.format(
             urlparse.urlencode({'access_token': access_token})))
 
-    r2 = requests.post(done, data={'project_member_id': project_member_id,
+    r3 = requests.post(done, data={'project_member_id': project_member_id,
                                    'file_id': r1.json()['id']})
-    handle_error(r2, 200)
+    handle_error(r3, 200)
     logging.info('Upload complete: {}'.format(file_identifier))
-    return r2
+    return r3
 
 
 def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,

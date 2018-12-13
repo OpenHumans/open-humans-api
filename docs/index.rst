@@ -4,13 +4,30 @@
    contain the root `toctree` directive.
 
 Welcome to open-humans-api's documentation!
-===========================================
+*******************************************
+
+``open-humans-api`` is a Python package that wraps the API methods of
+`Open Humans <https://www.openhumans.org/>`_ for easier use in your own
+Python applications and websites.
+
+It also installs a
+set of command line utilities that can be used to
+
+* download public files
+
+  * for a given Project
+  * for a given Member
+
+* Upload files for a project through a ``master_access_token``
+* Download files for a project through a ``master_access_token``
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :caption: Contents:
 
-   modules
+   cli
+   ohapi
+   tests
 
 
 Indices and tables

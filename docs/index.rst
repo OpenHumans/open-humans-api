@@ -21,6 +21,15 @@ set of command line utilities that can be used to
 * Upload files for a project through a ``master_access_token`` or OAuth2 ``access_token``
 * Download files for a project through a ``master_access_token`` or OAuth2 ``access_token``
 
+Installation
+============
+
+You can install ``open-humans-api`` through ``pip``:
+
+.. code-block:: Shell
+
+  pip install open-humans-api
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

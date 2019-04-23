@@ -2,6 +2,7 @@ import csv
 import logging
 import os
 import re
+import requests
 
 import click
 
@@ -138,13 +139,19 @@ def download(directory, master_token=None, member=None, access_token=None,
                                  excludelist=excludelist,
                                  project_data=project_data)
     else:
+        combined_data = []
         member_data = exchange_oauth2_member(access_token)
+        combined_data = member_data
+        while member_data['next']:
+            response = requests.get(member_data['next'])
+            member_data = response.json()
+            combined_data['data'] += member_data['data']
         if project_data:
-            OHProject.download_member_project_data(member_data=member_data,
+            OHProject.download_member_project_data(member_data=combined_data,
                                                    target_member_dir=directory,
                                                    max_size=max_size)
         else:
-            OHProject.download_member_shared(member_data=member_data,
+            OHProject.download_member_shared(member_data=combined_data,
                                              target_member_dir=directory,
                                              source=source,
                                              max_size=max_size)

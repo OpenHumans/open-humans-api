@@ -51,10 +51,12 @@ def set_log_level(debug, verbose):
               is_flag=True)
 @click.option('--memberlist', help='Text file with whitelist IDs to retrieve')
 @click.option('--excludelist', help='Text file with blacklist IDs to avoid')
+@click.option('--id-filename', is_flag=True,
+              help='Prepend filenames with IDs to ensure uniqueness.')
 def download_cli(directory, master_token=None, member=None, access_token=None,
                  source=None, project_data=False, max_size='128m',
                  verbose=False, debug=False, memberlist=None,
-                 excludelist=None):
+                 excludelist=None, id_filename=False):
     """
     Command line function for downloading data from project members to the
     target directory. For more information visit
@@ -62,12 +64,13 @@ def download_cli(directory, master_token=None, member=None, access_token=None,
     """
     return download(directory, master_token, member, access_token, source,
                     project_data, max_size, verbose, debug, memberlist,
-                    excludelist)
+                    excludelist, id_filename)
 
 
 def download(directory, master_token=None, member=None, access_token=None,
              source=None, project_data=False, max_size='128m', verbose=False,
-             debug=False, memberlist=None, excludelist=None):
+             debug=False, memberlist=None, excludelist=None,
+             id_filename=False):
     """
     Download data from project members to the target directory.
 
@@ -123,31 +126,36 @@ def download(directory, master_token=None, member=None, access_token=None,
                 project.download_member_project_data(
                     member_data=project.project_data[member],
                     target_member_dir=directory,
-                    max_size=max_size)
+                    max_size=max_size,
+                    id_filename=id_filename)
             else:
                 project.download_member_shared(
                     member_data=project.project_data[member],
                     target_member_dir=directory,
                     source=source,
-                    max_size=max_size)
+                    max_size=max_size,
+                    id_filename=id_filename)
         else:
             project.download_all(target_dir=directory,
                                  source=source,
                                  max_size=max_size,
                                  memberlist=memberlist,
                                  excludelist=excludelist,
-                                 project_data=project_data)
+                                 project_data=project_data,
+                                 id_filename=id_filename)
     else:
-        member_data = exchange_oauth2_member(access_token)
+        member_data = exchange_oauth2_member(access_token, all_files=True)
         if project_data:
             OHProject.download_member_project_data(member_data=member_data,
                                                    target_member_dir=directory,
-                                                   max_size=max_size)
+                                                   max_size=max_size,
+                                                   id_filename=id_filename)
         else:
             OHProject.download_member_shared(member_data=member_data,
                                              target_member_dir=directory,
                                              source=source,
-                                             max_size=max_size)
+                                             max_size=max_size,
+                                             id_filename=id_filename)
 
 
 @click.command()

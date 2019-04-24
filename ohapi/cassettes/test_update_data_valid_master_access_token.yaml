@@ -9,7 +9,7 @@ interactions:
     method: GET
     uri: https://www.openhumans.org/api/direct-sharing/project/members/?access_token=ACCESSTOKEN
   response:
-    body: {string: '{"count":3,"next":null,"previous":null,"results":[{"created":"date1","project_member_id":"PMI1","message_permission":true,"sources_shared":[],"username":"User1","data":[]},{"created":"date2","project_member_id":"PMI2","message_permission":true,"sources_shared":[],"username":"user2","data":[{}]},{"created":"date3","project_member_id":"PMI3","message_permission":true,"sources_shared":[],"username":"user3","data":[{}]}]}'}
+    body: {string: '{"count":3,"next":null,"previous":null,"results":[{"created":"date1","project_member_id":"PMI1","message_permission":true,"sources_shared":[],"username":"User1","data":[],"file_count":0},{"created":"date2","project_member_id":"PMI2","message_permission":true,"sources_shared":[],"username":"user2","data":[{}],"file_count":0},{"created":"date3","project_member_id":"PMI3","message_permission":true,"sources_shared":[],"username":"user3","data":[{}],"file_count":0}]}'}
     headers:
       Allow: ['GET, HEAD, OPTIONS']
       Cache-Control: ['must-revalidate, no-store, no-cache, max-age=0']
@@ -34,7 +34,7 @@ interactions:
     method: GET
     uri: https://www.openhumans.org/api/direct-sharing/project/members/?access_token=ACCESSTOKEN
   response:
-    body: {string: '{"count":3,"next":null,"previous":null,"results":[{"created":"date1","project_member_id":"PMI1","message_permission":true,"sources_shared":[],"username":"User1","data":[]},{"created":"date2","project_member_id":"PMI2","message_permission":true,"sources_shared":[],"username":"user2","data":[{}]},{"created":"date3","project_member_id":"PMI3","message_permission":true,"sources_shared":[],"username":"user3","data":[{}]}]}'}
+    body: {string: '{"count":3,"next":null,"previous":null,"results":[{"created":"date1","project_member_id":"PMI1","message_permission":true,"sources_shared":[],"username":"User1","data":[],"file_count":0},{"created":"date2","project_member_id":"PMI2","message_permission":true,"sources_shared":[],"username":"user2","file_count":0,"data":[{}]},{"created":"date3","project_member_id":"PMI3","message_permission":true,"sources_shared":[],"username":"user3","file_count":0,"data":[{}]}]}'}
     headers:
       Allow: ['GET, HEAD, OPTIONS']
       Cache-Control: ['must-revalidate, no-store, no-cache, max-age=0']

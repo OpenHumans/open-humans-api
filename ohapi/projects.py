@@ -8,7 +8,7 @@ import os
 import arrow
 from humanfriendly import parse_size
 
-from .api import delete_file, get_all_results, upload_aws
+from .api import delete_file, get_all_results, get_page, upload_aws
 from .utils_fs import download_file, validate_metadata
 
 MAX_SIZE_DEFAULT = '128m'
@@ -24,7 +24,7 @@ class OHProject:
         self.update_data()
 
     @staticmethod
-    def _get_member_file_data(member_data):
+    def _get_member_file_data(member_data, id_filename=False):
         """
         Helper function to get file data of member of a project.
 
@@ -32,7 +32,10 @@ class OHProject:
         """
         file_data = {}
         for datafile in member_data['data']:
-            basename = datafile['basename']
+            if id_filename:
+                basename = '{}.{}'.format(datafile['id'], datafile['basename'])
+            else:
+                basename = datafile['basename']
             if (basename not in file_data or
                     arrow.get(datafile['created']) >
                     arrow.get(file_data[basename]['created'])):
@@ -46,13 +49,23 @@ class OHProject:
         url = ('https://www.openhumans.org/api/direct-sharing/project/'
                'members/?access_token={}'.format(self.master_access_token))
         results = get_all_results(url)
-        self.project_data = {result['project_member_id']: result for
-                             result in results}
+        self.project_data = dict()
+        for result in results:
+            self.project_data[result['project_member_id']] = result
+            if len(result['data']) < result['file_count']:
+                member_data = get_page(result['exchange_member'])
+                final_data = member_data['data']
+                while member_data['next']:
+                    member_data = get_page(member_data['next'])
+                    final_data = final_data + member_data['data']
+                self.project_data[
+                    result['project_member_id']]['data'] = final_data
         return self.project_data
 
     @classmethod
     def download_member_project_data(cls, member_data, target_member_dir,
-                                     max_size=MAX_SIZE_DEFAULT):
+                                     max_size=MAX_SIZE_DEFAULT,
+                                     id_filename=False):
         """
         Download files to sync a local dir to match OH member project data.
 
@@ -64,7 +77,8 @@ class OHProject:
         """
         logging.debug('Download member project data...')
         sources_shared = member_data['sources_shared']
-        file_data = cls._get_member_file_data(member_data)
+        file_data = cls._get_member_file_data(member_data,
+                                              id_filename=id_filename)
         for basename in file_data:
             # This is using a trick to identify a project's own data in an API
             # response, without knowing the project's identifier: if the data
@@ -78,7 +92,7 @@ class OHProject:
 
     @classmethod
     def download_member_shared(cls, member_data, target_member_dir, source=None,
-                               max_size=MAX_SIZE_DEFAULT):
+                               max_size=MAX_SIZE_DEFAULT, id_filename=False):
         """
         Download files to sync a local dir to match OH member shared data.
 
@@ -95,7 +109,8 @@ class OHProject:
         """
         logging.debug('Download member shared data...')
         sources_shared = member_data['sources_shared']
-        file_data = cls._get_member_file_data(member_data)
+        file_data = cls._get_member_file_data(member_data,
+                                              id_filename=id_filename)
 
         logging.info('Downloading member data to {}'.format(target_member_dir))
         for basename in file_data:
@@ -123,7 +138,7 @@ class OHProject:
 
     def download_all(self, target_dir, source=None, project_data=False,
                      memberlist=None, excludelist=None,
-                     max_size=MAX_SIZE_DEFAULT):
+                     max_size=MAX_SIZE_DEFAULT, id_filename=False):
         """
         Download data for all users including shared data files.
 
@@ -154,13 +169,15 @@ class OHProject:
                 self.download_member_project_data(
                     member_data=self.project_data[member],
                     target_member_dir=member_dir,
-                    max_size=max_size)
+                    max_size=max_size,
+                    id_filename=id_filename)
             else:
                 self.download_member_shared(
                     member_data=self.project_data[member],
                     target_member_dir=member_dir,
                     source=source,
-                    max_size=max_size)
+                    max_size=max_size,
+                    id_filename=id_filename)
 
     @staticmethod
     def upload_member_from_dir(member_data, target_member_dir, metadata,

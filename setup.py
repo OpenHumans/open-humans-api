@@ -5,7 +5,7 @@ import sys
 
 
 def readme():
-    with open('README.rst') as f:
+    with open('README.md') as f:
         return f.read()
 
 
@@ -28,6 +28,7 @@ setup(
 
     description='Tools for working with Open Humans APIs',
     long_description=readme(),
+    long_description_content_type="text/markdown",
 
     version='0.2.7',
 

@@ -139,7 +139,7 @@ def get_all_results(starting_page):
 
 
 def exchange_oauth2_member(access_token, base_url=OH_BASE_URL,
-                           all_files=False):
+                           all_files=True):
     """
     Returns data for a specific user, including shared data files.
 

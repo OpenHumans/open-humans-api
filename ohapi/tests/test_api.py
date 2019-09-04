@@ -365,7 +365,7 @@ class APITestUpload(TestCase):
     @my_vcr.use_cassette()
     def test_upload_file_invalid_metadata_with_description(self):
         self.assertRaisesRegexp(
-            Exception, '"tags" is a required field', upload_file,
+            Exception, 'tags.+ is a required field', upload_file,
             target_filepath=TARGET_FILEPATH,
             metadata=FILE_METADATA_INVALID_WITH_DESC,
             access_token=ACCESS_TOKEN,
@@ -374,7 +374,7 @@ class APITestUpload(TestCase):
     @my_vcr.use_cassette()
     def test_upload_file_invalid_metadata_without_description(self):
         self.assertRaisesRegexp(
-            Exception, '"description" is a required field of the metadata',
+            Exception, 'description.+ is a required field of the metadata',
             upload_file,
             target_filepath=TARGET_FILEPATH,
             metadata=FILE_METADATA_INVALID,
@@ -457,7 +457,7 @@ class APITestUpload(TestCase):
     def test_upload_file_remote_info_not_none_invalid_metadata_with_desc(self):
         # Note: alternate file needed to trigger an attempted upload.
         self.assertRaisesRegexp(
-            Exception, '"tags" is a required field of the metadata',
+            Exception, 'tags.+ is a required field of the metadata',
             upload_file,
             target_filepath=TARGET_FILEPATH2,
             metadata=FILE_METADATA_INVALID_WITH_DESC,
@@ -468,7 +468,7 @@ class APITestUpload(TestCase):
     @my_vcr.use_cassette()
     def test_upload_file_remote_info_not_none_invalid_metadata(self):
         self.assertRaisesRegexp(
-            Exception, '"description" is a required field of the metadata',
+            Exception, 'description.+ is a required field of the metadata',
             upload_file,
             target_filepath=TARGET_FILEPATH2,
             metadata=FILE_METADATA_INVALID,

@@ -266,18 +266,11 @@ def handle_error(r, expected_code):
     """
     code = r.status_code
     if code != expected_code:
-        info = 'API response status code {}'.format(code)
-        try:
-            if 'detail' in r.json():
-                info = info + ": {}".format(r.json()['detail'])
-            elif 'metadata' in r.json():
-                info = info + ": {}".format(r.json()['metadata'])
-        except json.decoder.JSONDecodeError:
-            info = info + ":\n{}".format(r.content)
+        info = 'API response status code {}:\n{}'.format(code, r.content)
         raise Exception(info)
 
 
-def upload_stream(stream, filename, metadata, access_token,
+def upload_stream(stream, filename, metadata, access_token, datatypes=None,
                   base_url=OH_BASE_URL, remote_file_info=None,
                   project_member_id=None, max_bytes=MAX_FILE_DEFAULT,
                   file_identifier=None):
@@ -339,6 +332,8 @@ def upload_stream(stream, filename, metadata, access_token,
     data = {'project_member_id': project_member_id,
             'metadata': json.dumps(metadata),
             'filename': filename}
+    if datatypes:
+        data['datatypes'] = json.dumps(datatypes)
     r1 = requests.post(url, data=data)
     handle_error(r1, 201)
     r2 = requests.put(url=r1.json()['url'], data=stream)
@@ -355,9 +350,9 @@ def upload_stream(stream, filename, metadata, access_token,
     return r3
 
 
-def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
-                remote_file_info=None, project_member_id=None,
-                max_bytes=MAX_FILE_DEFAULT):
+def upload_file(target_filepath, metadata, access_token, datatypes=None,
+                base_url=OH_BASE_URL, remote_file_info=None,
+                project_member_id=None, max_bytes=MAX_FILE_DEFAULT):
     """
     Upload a file from a local filepath using the "direct upload" API.
     To learn more about this API endpoint see:
@@ -380,9 +375,17 @@ def upload_file(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
     """
     with open(target_filepath, 'rb') as stream:
         filename = os.path.basename(target_filepath)
-        return upload_stream(stream, filename, metadata, access_token,
-                             base_url, remote_file_info, project_member_id,
-                             max_bytes, file_identifier=target_filepath)
+        return upload_stream(
+            stream=stream,
+            filename=filename,
+            metadata=metadata,
+            access_token=access_token,
+            datatypes=datatypes,
+            base_url=base_url,
+            remote_file_info=remote_file_info,
+            project_member_id=project_member_id,
+            max_bytes=max_bytes,
+            file_identifier=target_filepath)
 
 
 def upload_aws(target_filepath, metadata, access_token, base_url=OH_BASE_URL,
